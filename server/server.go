@@ -49,6 +49,10 @@ func (s *Server) SetupLogger() {
 	}))
 }
 
+func (s *Server) SetupCors() {
+	s.Echo.Use(middleware.CORS())
+}
+
 func (s *Server) Start() {
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt)
 	defer stop()
