@@ -11,6 +11,7 @@ func main() {
 		utils.InitLogger()
 		logger := utils.GetLogger()
 		httpServer.SetupLogger()
+		httpServer.SetupCors()
 		server.ConfigureRoutes(httpServer.Echo, logger)
 		httpServer.Start()
 	}
