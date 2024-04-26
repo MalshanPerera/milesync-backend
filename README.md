@@ -1,6 +1,6 @@
-# Prerequisites
+# Jira For Peasants 😤 
 
-**For Development:**
+**Prerequisites:**
 
 Install Air -> `go install https://github.com/cosmtrek/air`
 
