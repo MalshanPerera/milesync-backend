@@ -1,10 +1,17 @@
 package main
 
-import "jira-for-peasents/server"
+import (
+	"jira-for-peasents/server"
+	"jira-for-peasents/utils"
+)
 
 func main() {
-	server := server.NewServer()
-	if server != nil {
-		server.Start()
+	httpServer := server.NewServer()
+	if httpServer != nil {
+		utils.InitLogger()
+		logger := utils.GetLogger()
+		httpServer.SetupLogger()
+		server.ConfigureRoutes(httpServer.Echo, logger)
+		httpServer.Start()
 	}
 }
