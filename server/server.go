@@ -30,7 +30,6 @@ func NewServer() *Server {
 
 	return nil
 }
-
 func (s *Server) Start() {
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt)
 	defer stop()
@@ -43,9 +42,19 @@ func (s *Server) Start() {
 
 	// Wait for interrupt signal to gracefully shutdown the server with a timeout of 10 seconds.
 	<-ctx.Done()
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	ctxShutdown, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
-	if err := s.Echo.Shutdown(ctx); err != nil {
-		s.Echo.Logger.Fatal(err)
+	shutdownError := make(chan error, 1)
+	go func() {
+		shutdownError <- s.Echo.Shutdown(ctxShutdown)
+	}()
+
+	select {
+	case err := <-shutdownError:
+		if err != nil {
+			s.Echo.Logger.Fatal(err)
+		}
+	case <-ctxShutdown.Done():
+		s.Echo.Logger.Fatal("shutdown timeout")
 	}
 }
