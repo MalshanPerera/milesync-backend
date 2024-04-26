@@ -1,8 +1,13 @@
 package server
 
 import (
+	"context"
 	"fmt"
 	"jira-for-peasents/config"
+	"net/http"
+	"os"
+	"os/signal"
+	"time"
 
 	"github.com/labstack/echo/v4"
 )
@@ -27,5 +32,20 @@ func NewServer() *Server {
 }
 
 func (s *Server) Start() {
-	s.Echo.Logger.Fatal(s.Echo.Start(":" + s.Config.Port))
+	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt)
+	defer stop()
+	// Start server
+	go func() {
+		if err := s.Echo.Start(":" + s.Config.Port); err != nil && err != http.ErrServerClosed {
+			s.Echo.Logger.Fatal("shutting down the server", err)
+		}
+	}()
+
+	// Wait for interrupt signal to gracefully shutdown the server with a timeout of 10 seconds.
+	<-ctx.Done()
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	if err := s.Echo.Shutdown(ctx); err != nil {
+		s.Echo.Logger.Fatal(err)
+	}
 }
