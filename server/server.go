@@ -3,8 +3,9 @@ package server
 import (
 	"context"
 	"fmt"
+	"jira-for-peasents/common"
 	"jira-for-peasents/config"
-	"jira-for-peasents/utils"
+	datastore "jira-for-peasents/db"
 	"net/http"
 	"os"
 	"os/signal"
@@ -18,6 +19,7 @@ import (
 type Server struct {
 	Echo   *echo.Echo
 	Config *config.Config
+	DB     *datastore.DB
 }
 
 type CustomValidator struct {
@@ -36,9 +38,11 @@ func NewServer() *Server {
 	config := config.NewConfig()
 	err := config.Validate()
 	if err == nil {
+		db := datastore.NewDB(config.DB.User, config.DB.Password, config.DB.Host, config.DB.Port, config.DB.DatabaseName)
 		return &Server{
 			Echo:   echo.New(),
 			Config: config,
+			DB:     db,
 		}
 	}
 	fmt.Printf("Invalid config %s \n", err.Error())
@@ -50,20 +54,25 @@ func (s *Server) SetupValidator() {
 	s.Echo.Validator = &CustomValidator{validator: validator.New()}
 }
 
-func (s *Server) SetupLogger() {
-	logger := utils.GetZeroLogger()
-	s.Echo.Use(middleware.RequestLoggerWithConfig(middleware.RequestLoggerConfig{
-		LogURI:    true,
-		LogStatus: true,
-		LogValuesFunc: func(c echo.Context, v middleware.RequestLoggerValues) error {
-			logger.Info().
-				Str("URI", v.URI).
-				Int("status", v.Status).
-				Msg("request")
+func (s *Server) SetupErrorHandler() {
+	s.Echo.HTTPErrorHandler = func(err error, c echo.Context) {
+		if c.Response().Committed {
+			return
+		}
 
-			return nil
-		},
-	}))
+		// check if error is known type to be handled differently
+		if myErr, ok := err.(common.ApiError); ok {
+			if err := c.JSON(myErr.Code, map[string]string{
+				"code":    fmt.Sprintf("%d", myErr.Code),
+				"message": myErr.Message,
+			}); err != nil {
+				s.Echo.Logger.Error(err)
+			}
+			return
+		}
+		// use default error handler functionality
+		s.Echo.DefaultHTTPErrorHandler(err, c)
+	}
 }
 
 func (s *Server) SetupCors() {

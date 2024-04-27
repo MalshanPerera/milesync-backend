@@ -1,24 +1,24 @@
 package server
 
 import (
+	"jira-for-peasents/common"
 	"jira-for-peasents/handlers"
-	"jira-for-peasents/utils"
-
-	"github.com/labstack/echo/v4"
+	"jira-for-peasents/services"
 )
 
 func ConfigureRoutes(
-	echo *echo.Echo,
-	logger utils.Logger,
+	s *Server,
 ) {
-	apiV1 := echo.Group("/api/v1")
-	authHandler := handlers.NewAuthHandler()
+	apiV1 := s.Echo.Group("/api/v1")
+	userService := services.NewUserService(s.DB)
+
+	authHandler := handlers.NewAuthHandler(userService)
 
 	authGroup := apiV1.Group("/auth")
 	authHandler.RegisterRoutes(authGroup)
 
-	routeList := echo.Routes()
+	routeList := s.Echo.Routes()
 	for _, route := range routeList {
-		logger.Info("Route Registered: " + route.Path + " " + route.Method)
+		common.Logger.LogInfo().Msg("Route Registered: " + route.Path + " " + route.Method)
 	}
 }

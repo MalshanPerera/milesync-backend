@@ -1,18 +1,18 @@
 package config
 
 import (
-	"jira-for-peasents/utils"
+	"jira-for-peasents/common"
 	"os"
 
 	"github.com/joho/godotenv"
 )
 
 type DBConfig struct {
-	User     string
-	Password string
-	Name     string
-	Host     string
-	Port     string
+	User         string
+	Password     string
+	DatabaseName string
+	Host         string
+	Port         string
 }
 
 type Config struct {
@@ -22,27 +22,27 @@ type Config struct {
 
 func (e *Config) Validate() error {
 	if e.Port == "" {
-		return utils.AppError{Message: "Port is required"}
+		return common.AppError{Message: "Port is required"}
 	}
 
 	if e.DB.User == "" {
-		return utils.AppError{Message: "DB User is required"}
+		return common.AppError{Message: "DB User is required"}
 	}
 
 	if e.DB.Password == "" {
-		return utils.AppError{Message: "DB Password is required"}
+		return common.AppError{Message: "DB Password is required"}
 	}
 
-	if e.DB.Name == "" {
-		return utils.AppError{Message: "DB Name is required"}
+	if e.DB.DatabaseName == "" {
+		return common.AppError{Message: "DB Name is required"}
 	}
 
 	if e.DB.Host == "" {
-		return utils.AppError{Message: "DB Host is required"}
+		return common.AppError{Message: "DB Host is required"}
 	}
 
 	if e.DB.Port == "" {
-		return utils.AppError{Message: "DB Port is required"}
+		return common.AppError{Message: "DB Port is required"}
 	}
 
 	return nil
@@ -55,11 +55,11 @@ func NewConfig() *Config {
 	}
 
 	dbConfig := DBConfig{
-		User:     os.Getenv("DB_USERNAME"),
-		Password: os.Getenv("DB_PASSWORD"),
-		Name:     os.Getenv("DB_DATABASE"),
-		Host:     os.Getenv("DB_HOST"),
-		Port:     os.Getenv("DB_PORT"),
+		User:         os.Getenv("DB_USERNAME"),
+		Password:     os.Getenv("DB_PASSWORD"),
+		DatabaseName: os.Getenv("DB_DATABASE"),
+		Host:         os.Getenv("DB_HOST"),
+		Port:         os.Getenv("DB_PORT"),
 	}
 
 	return &Config{

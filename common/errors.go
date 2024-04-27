@@ -1,4 +1,4 @@
-package utils
+package common
 
 import "net/http"
 
@@ -11,6 +11,10 @@ type ApiError struct {
 	Message string `json:"message"`
 }
 
+type DBError struct {
+	Message string
+}
+
 func (e ApiError) Error() string {
 	return e.Message
 }
@@ -19,9 +23,34 @@ func (e AppError) Error() string {
 	return e.Message
 }
 
-var BadRequest = ApiError{
-	Code:    http.StatusBadRequest,
-	Message: "Bad request",
+func (e DBError) Error() string {
+	return e.Message
+}
+
+func NewAppError(message string) AppError {
+	return AppError{
+		Message: message,
+	}
+}
+
+func NewDBError(message string) DBError {
+	return DBError{
+		Message: message,
+	}
+}
+
+func NewApiError(code int, message string) ApiError {
+	return ApiError{
+		Code:    code,
+		Message: message,
+	}
+}
+
+func BadRequest(message string) ApiError {
+	return ApiError{
+		Code:    http.StatusBadRequest,
+		Message: message,
+	}
 }
 
 var InternalServerError = ApiError{
