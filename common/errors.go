@@ -1,6 +1,10 @@
 package common
 
-import "net/http"
+import (
+	"net/http"
+
+	"github.com/jackc/pgx/v5"
+)
 
 type AppError struct {
 	Message string
@@ -14,6 +18,8 @@ type ApiError struct {
 type DBError struct {
 	Message string
 }
+
+var NoResults = pgx.ErrNoRows
 
 func (e ApiError) Error() string {
 	return e.Message

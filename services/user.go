@@ -5,7 +5,7 @@ import (
 	"jira-for-peasents/common"
 	datastore "jira-for-peasents/db"
 	db "jira-for-peasents/db/sqlc"
-	service_utils "jira-for-peasents/services/utils"
+	"jira-for-peasents/utils"
 )
 
 type UserService struct {
@@ -25,7 +25,7 @@ type CreateUserParams struct {
 }
 
 func (s *UserService) CreateUser(ctx context.Context, params CreateUserParams) (db.User, error) {
-	hashedPassword, e := service_utils.GenerateFromPassword(params.Password)
+	hashedPassword, e := utils.GenerateFromPassword(params.Password)
 	if e != nil {
 		return db.User{}, e
 	}

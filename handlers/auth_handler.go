@@ -7,7 +7,6 @@ import (
 	"jira-for-peasents/services"
 	"net/http"
 
-	"github.com/jackc/pgx/v5"
 	"github.com/labstack/echo/v4"
 )
 
@@ -38,7 +37,7 @@ func (h *AuthHandler) registerUser(c echo.Context) error {
 
 	_, err := h.userService.GetUserFromEmail(ctx, u.Email)
 
-	if err != nil && err != pgx.ErrNoRows {
+	if err != nil && err != common.NoResults {
 		return err
 	}
 

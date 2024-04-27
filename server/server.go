@@ -70,6 +70,8 @@ func (s *Server) SetupErrorHandler() {
 			}
 			return
 		}
+
+		//TODO: handle other error types
 		// use default error handler functionality
 		s.Echo.DefaultHTTPErrorHandler(err, c)
 	}
