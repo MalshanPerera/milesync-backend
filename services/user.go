@@ -39,7 +39,7 @@ func (s *UserService) CreateUser(ctx context.Context, params CreateUserParams) (
 		err = s.db.RollbackTx(ctx, tx)
 	}()
 
-	newUser, e := db.New(tx).CreateUser(ctx, db.CreateUserParams{
+	newUser, e := s.db.GetQuery().WithTx(tx).CreateUser(ctx, db.CreateUserParams{
 		Name:     params.Name,
 		Email:    params.Email,
 		Password: hashedPassword,
@@ -56,13 +56,7 @@ func (s *UserService) CreateUser(ctx context.Context, params CreateUserParams) (
 }
 
 func (s *UserService) GetUserFromId(ctx context.Context, id string) (db.User, error) {
-	tx, err := s.db.BeginTx(ctx)
-
-	if err != nil {
-		return db.User{}, common.NewDBError(err.Error())
-	}
-
-	existingUser, e := db.New(tx).GetUser(ctx, id)
+	existingUser, e := s.db.GetQuery().GetUser(ctx, id)
 
 	if e != nil {
 		return db.User{}, e
@@ -72,13 +66,7 @@ func (s *UserService) GetUserFromId(ctx context.Context, id string) (db.User, er
 }
 
 func (s *UserService) GetUserFromEmail(ctx context.Context, email string) (db.User, error) {
-	tx, err := s.db.BeginTx(ctx)
-
-	if err != nil {
-		return db.User{}, common.NewDBError(err.Error())
-	}
-
-	existingUser, e := db.New(tx).GetUserFromEmail(ctx, email)
+	existingUser, e := s.db.GetQuery().GetUserFromEmail(ctx, email)
 
 	if e != nil {
 		return db.User{}, e
@@ -103,7 +91,7 @@ func (s *UserService) UpdateUser(ctx context.Context, id string, params UpdateUs
 		err = s.db.RollbackTx(ctx, tx)
 	}()
 
-	updatedUser, e := db.New(tx).UpdateUser(ctx, db.UpdateUserParams{
+	updatedUser, e := s.db.GetQuery().WithTx(tx).UpdateUser(ctx, db.UpdateUserParams{
 		ID:    id,
 		Name:  params.Name,
 		Email: params.Email,

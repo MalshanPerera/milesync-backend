@@ -3,6 +3,7 @@ package datastore
 import (
 	"context"
 	"fmt"
+	sqlc "jira-for-peasents/db/sqlc"
 	"os"
 
 	"github.com/jackc/pgx/v5"
@@ -10,7 +11,8 @@ import (
 )
 
 type DB struct {
-	pool *pgxpool.Pool
+	pool  *pgxpool.Pool
+	query *sqlc.Queries
 }
 
 // Use pgxpool for concurrent connections
@@ -27,6 +29,7 @@ func NewDB(
 	var err error
 	d := &DB{}
 	d.pool, err = pgxpool.New(context.Background(), connStr)
+
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 		os.Exit(1)
@@ -37,7 +40,7 @@ func NewDB(
 		fmt.Fprintf(os.Stderr, "Unable to ping database: %v\n", err)
 		os.Exit(1)
 	}
-
+	d.query = sqlc.New(d.pool)
 	fmt.Println("Connected to database")
 
 	return d
@@ -49,6 +52,10 @@ func (d *DB) Close() {
 
 func (d *DB) GetDB() *pgxpool.Pool {
 	return d.pool
+}
+
+func (d *DB) GetQuery() *sqlc.Queries {
+	return d.query
 }
 
 func (d *DB) BeginTx(ctx context.Context) (pgx.Tx, error) {
