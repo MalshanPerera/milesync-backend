@@ -11,9 +11,7 @@ build:
 dev:
 	# Custom port
 	# air -- --port=:4002
-	air \
-		--build.cmd "make build" --build.bin "bin/${BINARY_NAME}" --build.delay "100" \
-		--misc.clean_on_exit "true"
+	air
 
 run: build
 	./bin/app
