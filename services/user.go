@@ -25,6 +25,11 @@ type CreateUserParams struct {
 	Password  string
 }
 
+type LoginUserParams struct {
+	Email    string
+	Password string
+}
+
 func (s *UserService) CreateUser(ctx context.Context, params CreateUserParams) (db.User, db.Session, error) {
 	hashedPassword, e := utils.GenerateFromPassword(params.Password)
 	if e != nil {
@@ -79,6 +84,43 @@ func (s *UserService) CreateUser(ctx context.Context, params CreateUserParams) (
 	}
 
 	return newUser, session, nil
+}
+
+func (s *UserService) LoginUser(ctx context.Context, params LoginUserParams) (db.Session, error) {
+	existingUser, e := s.db.GetQuery().GetUserFromEmail(ctx, params.Email)
+
+	if e != nil {
+		return db.Session{}, e
+	}
+
+	match, e := utils.ComparePasswordAndHash(params.Password, existingUser.Password)
+
+	if !match || e != nil {
+		return db.Session{}, e
+	}
+
+	accessToken, expiredAt, err := utils.CreateToken(existingUser.ID, utils.Type.AccessToken)
+	if err != nil {
+		return db.Session{}, err
+	}
+
+	refreshToken, _, err := utils.CreateToken(existingUser.ID, utils.Type.RefreshToken)
+	if err != nil {
+		return db.Session{}, err
+	}
+
+	session, e := s.db.GetQuery().UpdateSession(ctx, db.UpdateSessionParams{
+		UserID:       existingUser.ID,
+		AccessToken:  accessToken,
+		RefreshToken: refreshToken,
+		ExpiresAt:    expiredAt,
+	})
+
+	if e != nil {
+		return db.Session{}, e
+	}
+
+	return session, nil
 }
 
 func (s *UserService) GetUserFromId(ctx context.Context, id string) (db.User, error) {
