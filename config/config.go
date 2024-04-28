@@ -15,9 +15,15 @@ type DBConfig struct {
 	Port         string
 }
 
+type AuthConfig struct {
+	Secret string
+	Expiry string
+}
+
 type Config struct {
 	Port string
 	DB   DBConfig
+	Auth AuthConfig
 }
 
 func (e *Config) Validate() error {
@@ -45,6 +51,14 @@ func (e *Config) Validate() error {
 		return common.AppError{Message: "DB Port is required"}
 	}
 
+	if e.Auth.Secret == "" {
+		return common.AppError{Message: "Auth Secret is required"}
+	}
+
+	if e.Auth.Expiry == "" {
+		return common.AppError{Message: "Auth Expiry is required"}
+	}
+
 	return nil
 }
 
@@ -62,8 +76,14 @@ func NewConfig() *Config {
 		Port:         os.Getenv("DB_PORT"),
 	}
 
+	authConfig := AuthConfig{
+		Secret: os.Getenv("JWT_SECRET"),
+		Expiry: os.Getenv("JWT_EXPIRED"),
+	}
+
 	return &Config{
 		Port: os.Getenv("PORT"),
 		DB:   dbConfig,
+		Auth: authConfig,
 	}
 }

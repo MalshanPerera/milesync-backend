@@ -1,29 +1,31 @@
 package responses
 
-type LoginResponse struct {
-	AccessToken  string `json:"accessToken"`
-	RefreshToken string `json:"refreshToken"`
+type AuthResponse struct {
+	ID           string `json:"id"`
+	FirstName    string `json:"first_name"`
+	LastName     string `json:"last_name"`
+	Email        string `json:"email"`
+	AccessToken  string `json:"access_token"`
+	RefreshToken string `json:"refresh_token"`
 	Exp          int64  `json:"exp"`
 }
 
-type RegisterUserResponse struct {
-	ID    string `json:"id"`
-	Name  string `json:"name"`
-	Email string `json:"email"`
-}
-
-func NewLoginResponse(token, refreshToken string, exp int64) *LoginResponse {
-	return &LoginResponse{
-		AccessToken:  token,
-		RefreshToken: refreshToken,
-		Exp:          exp,
-	}
-}
-
-func NewRegisterUserResponse(id, name, email string) *RegisterUserResponse {
-	return &RegisterUserResponse{
-		ID:    id,
-		Name:  name,
-		Email: email,
+func NewAuthResponse(
+	ID string,
+	FirstName string,
+	LastName string,
+	Email string,
+	AccessToken string,
+	RefreshToken string,
+	Exp int64,
+) *AuthResponse {
+	return &AuthResponse{
+		ID:           ID,
+		FirstName:    FirstName,
+		LastName:     LastName,
+		Email:        Email,
+		AccessToken:  AccessToken,
+		RefreshToken: RefreshToken,
+		Exp:          Exp,
 	}
 }

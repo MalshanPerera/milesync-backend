@@ -9,8 +9,9 @@ END;
 $$ LANGUAGE plpgsql;
 
 CREATE TABLE users(
-    id TEXT PRIMARY KEY NOT NULL,
-    name TEXT NOT NULL,
+    id char(21) DEFAULT nanoid() PRIMARY KEY,
+    first_name TEXT NOT NULL,
+    last_name TEXT NOT NULL,
     email TEXT NOT NULL UNIQUE,
     password TEXT NOT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),

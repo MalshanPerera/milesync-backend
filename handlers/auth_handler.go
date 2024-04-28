@@ -45,19 +45,24 @@ func (h *AuthHandler) registerUser(c echo.Context) error {
 		return common.BadRequest("User already exists")
 	}
 
-	newUser, err := h.userService.CreateUser(ctx, services.CreateUserParams{
-		Name:     u.Name,
-		Email:    u.Email,
-		Password: u.Password,
+	newUser, newSession, err := h.userService.CreateUser(ctx, services.CreateUserParams{
+		FirstName: u.FirstName,
+		LastName:  u.LastName,
+		Email:     u.Email,
+		Password:  u.Password,
 	})
 	if err != nil {
 		return err
 	}
 
-	return c.JSON(http.StatusOK, responses.NewRegisterUserResponse(
+	return c.JSON(http.StatusOK, responses.NewAuthResponse(
 		newUser.ID,
-		newUser.Name,
+		newUser.FirstName,
+		newUser.LastName,
 		newUser.Email,
+		newSession.AccessToken,
+		newSession.RefreshToken,
+		newSession.ExpiresAt,
 	))
 
 }

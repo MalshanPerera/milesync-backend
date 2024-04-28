@@ -8,9 +8,20 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+type Session struct {
+	ID           string
+	UserID       string
+	AccessToken  string
+	RefreshToken string
+	ExpiresAt    int64
+	CreatedAt    pgtype.Timestamp
+	UpdatedAt    pgtype.Timestamp
+}
+
 type User struct {
 	ID        string
-	Name      string
+	FirstName string
+	LastName  string
 	Email     string
 	Password  string
 	CreatedAt pgtype.Timestamp

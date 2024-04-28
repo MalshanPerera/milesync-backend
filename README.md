@@ -1,4 +1,4 @@
-# Jira For Peasants 😤 
+# Jira For Peasants 😤
 
 ## Prerequisites
 
@@ -12,12 +12,12 @@ Start Dev Server -> `make dev`
 
 Build Prod Server -> `make build`
 
+Generate SQLC -> `make sqlc`
+
 Create Migration -> `make goose-create NAME=${new_migration_name}`
 
 Migrate Up database -> `make goose-up`
 
 Migrate Down entire database -> `make goose-down`
 
-Kill Server
-
-`lsof -ti :4000 | xargs kill`
+Kill Server -> `lsof -ti :4000 | xargs kill`
