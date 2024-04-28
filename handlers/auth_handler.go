@@ -22,10 +22,10 @@ func NewAuthHandler(userService *services.UserService) AuthHandler {
 
 func (h *AuthHandler) RegisterRoutes(handler *echo.Group) {
 
-	handler.POST("/register", h.registerUser)
+	handler.POST("/register", h.handleRegisterUser)
 }
 
-func (h *AuthHandler) registerUser(c echo.Context) error {
+func (h *AuthHandler) handleRegisterUser(c echo.Context) error {
 	u := new(requests.RegisterUserRequest)
 	ctx := c.Request().Context()
 	if err := c.Bind(u); err != nil {
