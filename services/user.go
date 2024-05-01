@@ -116,6 +116,15 @@ func (s *UserService) LoginUser(ctx context.Context, params LoginUserParams) (db
 		ExpiresAt:    expiredAt,
 	})
 
+	if e == common.NoResults {
+		session, e = s.db.GetQuery().CreateSession(ctx, db.CreateSessionParams{
+			UserID:       existingUser.ID,
+			AccessToken:  accessToken,
+			RefreshToken: refreshToken,
+			ExpiresAt:    expiredAt,
+		})
+	}
+
 	if e != nil {
 		return db.Session{}, e
 	}
