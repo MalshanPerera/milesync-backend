@@ -52,7 +52,7 @@ func IsAuthenticated(next echo.HandlerFunc) echo.HandlerFunc {
 		}
 
 		// Add the user information to the context
-		c.Set("user_id", userId)
+		utils.SetUser(c, userId)
 
 		// If the user is authenticated, call the next handler with the new context
 		return next(c)
