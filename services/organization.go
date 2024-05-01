@@ -4,7 +4,6 @@ import (
 	"context"
 	datastore "jira-for-peasants/db"
 	db "jira-for-peasants/db/sqlc"
-	"jira-for-peasants/errors"
 	"strings"
 )
 
@@ -28,17 +27,8 @@ func createSlug(name string) string {
 }
 
 func (s *OrganizationService) CreateOrganization(ctx context.Context, params CreateOrganizationParams) (db.Organization, error) {
-	tx, err := s.db.BeginTx(ctx)
 
-	if err != nil {
-		return db.Organization{}, errors.NewDBError(err.Error())
-	}
-
-	defer func() {
-		err = s.db.RollbackTx(ctx, tx)
-	}()
-
-	organization, e := s.db.GetQuery().WithTx(tx).CreateOrganization(ctx, db.CreateOrganizationParams{
+	organization, e := s.db.GetQuery().CreateOrganization(ctx, db.CreateOrganizationParams{
 		Name:   params.Name,
 		UserID: params.UserId,
 		Slug:   createSlug(params.Name),
@@ -48,33 +38,12 @@ func (s *OrganizationService) CreateOrganization(ctx context.Context, params Cre
 		return db.Organization{}, e
 	}
 
-	e = s.db.CommitTx(ctx, tx)
-
-	if e != nil {
-		return db.Organization{}, e
-	}
-
 	return organization, nil
 }
 
 func (s *OrganizationService) DeleteOrganization(ctx context.Context, userId string) error {
-	tx, err := s.db.BeginTx(ctx)
 
-	if err != nil {
-		return errors.NewDBError(err.Error())
-	}
-
-	defer func() {
-		err = s.db.RollbackTx(ctx, tx)
-	}()
-
-	e := s.db.GetQuery().WithTx(tx).DeleteOrganization(ctx, userId)
-
-	if e != nil {
-		return e
-	}
-
-	e = s.db.CommitTx(ctx, tx)
+	e := s.db.GetQuery().DeleteOrganization(ctx, userId)
 
 	if e != nil {
 		return e
