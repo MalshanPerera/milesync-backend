@@ -17,6 +17,13 @@ RETURNING *;
 SELECT * FROM organization
 WHERE user_id = $1 LIMIT 1;
 
+-- name: GetOrganizationSlugUsed :one
+SELECT EXISTS (
+    SELECT 1
+    FROM organization
+    WHERE organization.slug = $1
+);
+
 -- name: DeleteOrganization :exec
 DELETE FROM organization
 WHERE user_id = $1;

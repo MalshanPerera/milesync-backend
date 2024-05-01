@@ -67,6 +67,21 @@ func (q *Queries) GetOrganization(ctx context.Context, userID string) (Organizat
 	return i, err
 }
 
+const getOrganizationSlugUsed = `-- name: GetOrganizationSlugUsed :one
+SELECT EXISTS (
+    SELECT 1
+    FROM organization
+    WHERE organization.slug = $1
+)
+`
+
+func (q *Queries) GetOrganizationSlugUsed(ctx context.Context, slug string) (bool, error) {
+	row := q.db.QueryRow(ctx, getOrganizationSlugUsed, slug)
+	var exists bool
+	err := row.Scan(&exists)
+	return exists, err
+}
+
 const updateOrganization = `-- name: UpdateOrganization :one
 UPDATE organization
 SET name = $2, slug = $3
