@@ -33,3 +33,10 @@ func (e ApiError) UnprocessableEntity(message string) ApiError {
 		Message: message,
 	}
 }
+
+var (
+	UserNotFound             = "UserNotFound"
+	InvalidPassword          = "InvalidPassword"
+	OrganizationNameExists   = "OrganizationNameExists"
+	OrganizationNameRequired = "OrganizationNameRequired"
+)

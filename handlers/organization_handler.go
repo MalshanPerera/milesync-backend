@@ -44,7 +44,7 @@ func (h *OrganizationHandler) createOrganization(c echo.Context) error {
 	}
 
 	if status {
-		return errors.BadRequest("ORGANIZATION_NAME_ALREADY_USED")
+		return errors.BadRequest(errors.OrganizationNameExists)
 	}
 
 	newOrg, err := h.organizationService.CreateOrganization(ctx, services.CreateOrganizationParams{
@@ -67,7 +67,7 @@ func (h *OrganizationHandler) createOrganization(c echo.Context) error {
 func (h *OrganizationHandler) getHandleAvailable(c echo.Context) error {
 	name := c.QueryParam("name")
 	if name == "" {
-		return errors.BadRequest("ORGANIZATION_NAME_REQUIRED")
+		return errors.BadRequest(errors.OrganizationNameRequired)
 	}
 
 	status, e := h.organizationService.GetOrganizationSlugUsed(c.Request().Context(), name)
