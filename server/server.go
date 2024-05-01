@@ -3,9 +3,9 @@ package server
 import (
 	"context"
 	"fmt"
-	"jira-for-peasents/common"
 	"jira-for-peasents/config"
 	datastore "jira-for-peasents/db"
+	"jira-for-peasents/errors"
 	"net/http"
 	"os"
 	"os/signal"
@@ -61,7 +61,7 @@ func (s *Server) SetupErrorHandler() {
 		}
 
 		// check if error is known type to be handled differently
-		if myErr, ok := err.(common.ApiError); ok {
+		if myErr, ok := err.(errors.ApiError); ok {
 			if err := c.JSON(myErr.Code, map[string]string{
 				"code":    fmt.Sprintf("%d", myErr.Code),
 				"message": myErr.Message,

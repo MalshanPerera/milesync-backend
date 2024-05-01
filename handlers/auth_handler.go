@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	"jira-for-peasents/common"
+	"jira-for-peasents/errors"
 	"jira-for-peasents/requests"
 	"jira-for-peasents/responses"
 	"jira-for-peasents/services"
@@ -38,12 +38,12 @@ func (h *AuthHandler) handleRegisterUser(c echo.Context) error {
 
 	_, err := h.userService.GetUserFromEmail(ctx, u.Email)
 
-	if err != nil && err != common.NoResults {
+	if err != nil && err != errors.NoResults {
 		return err
 	}
 
 	if err == nil {
-		return common.BadRequest("User already exists")
+		return errors.BadRequest("User already exists")
 	}
 
 	newUser, newSession, err := h.userService.CreateUser(ctx, services.CreateUserParams{
@@ -78,12 +78,12 @@ func (h *AuthHandler) handleLoginUser(c echo.Context) error {
 	}
 
 	existingUser, err := h.userService.GetUserFromEmail(ctx, u.Email)
-	if err != nil && err != common.NoResults {
+	if err != nil && err != errors.NoResults {
 		return err
 	}
 
 	if err != nil {
-		return common.BadRequest("User does not exist")
+		return errors.BadRequest("User does not exist")
 	}
 
 	newSession, err := h.userService.LoginUser(ctx, services.LoginUserParams{

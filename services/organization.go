@@ -2,9 +2,9 @@ package services
 
 import (
 	"context"
-	"jira-for-peasents/common"
 	datastore "jira-for-peasents/db"
 	db "jira-for-peasents/db/sqlc"
+	"jira-for-peasents/errors"
 	"strings"
 )
 
@@ -31,7 +31,7 @@ func (s *OrganizationService) CreateOrganization(ctx context.Context, params Cre
 	tx, err := s.db.BeginTx(ctx)
 
 	if err != nil {
-		return db.Organization{}, common.NewDBError(err.Error())
+		return db.Organization{}, errors.NewDBError(err.Error())
 	}
 
 	defer func() {
@@ -61,7 +61,7 @@ func (s *OrganizationService) DeleteOrganization(ctx context.Context, userId str
 	tx, err := s.db.BeginTx(ctx)
 
 	if err != nil {
-		return common.NewDBError(err.Error())
+		return errors.NewDBError(err.Error())
 	}
 
 	defer func() {

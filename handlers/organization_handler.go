@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	"jira-for-peasents/common"
+	"jira-for-peasents/errors"
 	"jira-for-peasents/requests"
 	"jira-for-peasents/responses"
 	"jira-for-peasents/services"
@@ -44,7 +44,7 @@ func (h *OrganizationHandler) createOrganization(c echo.Context) error {
 	}
 
 	if status {
-		return common.BadRequest("ORGANIZATION_NAME_ALREADY_USED")
+		return errors.BadRequest("ORGANIZATION_NAME_ALREADY_USED")
 	}
 
 	newOrg, err := h.organizationService.CreateOrganization(ctx, services.CreateOrganizationParams{
@@ -67,7 +67,7 @@ func (h *OrganizationHandler) createOrganization(c echo.Context) error {
 func (h *OrganizationHandler) getHandleAvailable(c echo.Context) error {
 	name := c.QueryParam("name")
 	if name == "" {
-		return common.BadRequest("ORGANIZATION_NAME_REQUIRED")
+		return errors.BadRequest("ORGANIZATION_NAME_REQUIRED")
 	}
 
 	status, e := h.organizationService.GetOrganizationSlugUsed(c.Request().Context(), name)

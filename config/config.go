@@ -1,7 +1,7 @@
 package config
 
 import (
-	"jira-for-peasents/common"
+	"jira-for-peasents/errors"
 	"os"
 
 	"github.com/joho/godotenv"
@@ -28,35 +28,35 @@ type Config struct {
 
 func (e *Config) Validate() error {
 	if e.Port == "" {
-		return common.AppError{Message: "Port is required"}
+		return errors.AppError{Message: "Port is required"}
 	}
 
 	if e.DB.User == "" {
-		return common.AppError{Message: "DB User is required"}
+		return errors.AppError{Message: "DB User is required"}
 	}
 
 	if e.DB.Password == "" {
-		return common.AppError{Message: "DB Password is required"}
+		return errors.AppError{Message: "DB Password is required"}
 	}
 
 	if e.DB.DatabaseName == "" {
-		return common.AppError{Message: "DB Name is required"}
+		return errors.AppError{Message: "DB Name is required"}
 	}
 
 	if e.DB.Host == "" {
-		return common.AppError{Message: "DB Host is required"}
+		return errors.AppError{Message: "DB Host is required"}
 	}
 
 	if e.DB.Port == "" {
-		return common.AppError{Message: "DB Port is required"}
+		return errors.AppError{Message: "DB Port is required"}
 	}
 
 	if e.Auth.Secret == "" {
-		return common.AppError{Message: "Auth Secret is required"}
+		return errors.AppError{Message: "Auth Secret is required"}
 	}
 
 	if e.Auth.Expiry == "" {
-		return common.AppError{Message: "Auth Expiry is required"}
+		return errors.AppError{Message: "Auth Expiry is required"}
 	}
 
 	return nil

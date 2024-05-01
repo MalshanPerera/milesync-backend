@@ -1,7 +1,7 @@
 package middlewares
 
 import (
-	"jira-for-peasents/common"
+	"jira-for-peasents/errors"
 	"jira-for-peasents/utils"
 	"net/http"
 	"strings"
@@ -25,7 +25,7 @@ func IsAuthenticated(next echo.HandlerFunc) echo.HandlerFunc {
 		if headerStr == "" {
 			cookie, err := c.Cookie("token")
 			if err != nil {
-				return common.ApiError{
+				return errors.ApiError{
 					Code:    http.StatusUnauthorized,
 					Message: "Unauthorized",
 				}
@@ -37,18 +37,18 @@ func IsAuthenticated(next echo.HandlerFunc) echo.HandlerFunc {
 		tokenString := strings.TrimPrefix(headerStr, "Bearer ")
 		token, err := utils.VerifyToken(tokenString)
 		if err != nil {
-			return common.BadRequest("Invalid token")
+			return errors.BadRequest("Invalid token")
 		}
 
 		// Extract the user information from the token
 		claims, ok := token.Claims.(jwt.MapClaims)
 		if !ok {
-			return common.BadRequest("Invalid token claims")
+			return errors.BadRequest("Invalid token claims")
 		}
 
 		userId, ok := claims["user_id"].(string)
 		if !ok {
-			return common.BadRequest("Invalid user id")
+			return errors.BadRequest("Invalid user id")
 		}
 
 		// Add the user information to the context

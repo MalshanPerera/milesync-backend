@@ -2,9 +2,9 @@ package services
 
 import (
 	"context"
-	"jira-for-peasents/common"
 	datastore "jira-for-peasents/db"
 	db "jira-for-peasents/db/sqlc"
+	"jira-for-peasents/errors"
 	"jira-for-peasents/utils"
 )
 
@@ -38,7 +38,7 @@ func (s *UserService) CreateUser(ctx context.Context, params CreateUserParams) (
 	tx, err := s.db.BeginTx(ctx)
 
 	if err != nil {
-		return db.User{}, db.Session{}, common.NewDBError(err.Error())
+		return db.User{}, db.Session{}, errors.NewDBError(err.Error())
 	}
 
 	defer func() {
@@ -116,7 +116,7 @@ func (s *UserService) LoginUser(ctx context.Context, params LoginUserParams) (db
 		ExpiresAt:    expiredAt,
 	})
 
-	if e == common.NoResults {
+	if e == errors.NoResults {
 		session, e = s.db.GetQuery().CreateSession(ctx, db.CreateSessionParams{
 			UserID:       existingUser.ID,
 			AccessToken:  accessToken,
