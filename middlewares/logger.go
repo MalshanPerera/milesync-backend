@@ -1,8 +1,8 @@
 package middlewares
 
 import (
-	"jira-for-peasents/common"
-	"jira-for-peasents/errors"
+	"jira-for-peasants/common"
+	"jira-for-peasants/errors"
 
 	"github.com/labstack/echo/v4"
 )

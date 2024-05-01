@@ -2,7 +2,7 @@ package utils
 
 import (
 	"fmt"
-	"jira-for-peasents/config"
+	"jira-for-peasants/config"
 	"log"
 	"strconv"
 	"time"

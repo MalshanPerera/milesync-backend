@@ -1,4 +1,4 @@
-module jira-for-peasents
+module jira-for-peasants
 
 go 1.22.1
 

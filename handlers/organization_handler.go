@@ -1,11 +1,11 @@
 package handlers
 
 import (
-	"jira-for-peasents/errors"
-	"jira-for-peasents/requests"
-	"jira-for-peasents/responses"
-	"jira-for-peasents/services"
-	"jira-for-peasents/utils"
+	"jira-for-peasants/errors"
+	"jira-for-peasants/requests"
+	"jira-for-peasants/responses"
+	"jira-for-peasants/services"
+	"jira-for-peasants/utils"
 	"net/http"
 
 	"github.com/labstack/echo/v4"

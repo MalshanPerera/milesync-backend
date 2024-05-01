@@ -1,9 +1,9 @@
 package main
 
 import (
-	"jira-for-peasents/common"
-	"jira-for-peasents/middlewares"
-	"jira-for-peasents/server"
+	"jira-for-peasants/common"
+	"jira-for-peasants/middlewares"
+	"jira-for-peasants/server"
 )
 
 func main() {

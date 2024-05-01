@@ -2,9 +2,9 @@ package services
 
 import (
 	"context"
-	datastore "jira-for-peasents/db"
-	db "jira-for-peasents/db/sqlc"
-	"jira-for-peasents/errors"
+	datastore "jira-for-peasants/db"
+	db "jira-for-peasants/db/sqlc"
+	"jira-for-peasants/errors"
 	"strings"
 )
 

@@ -3,7 +3,7 @@ package datastore
 import (
 	"context"
 	"fmt"
-	sqlc "jira-for-peasents/db/sqlc"
+	sqlc "jira-for-peasants/db/sqlc"
 	"os"
 
 	"github.com/jackc/pgx/v5"

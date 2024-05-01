@@ -3,9 +3,9 @@ package server
 import (
 	"context"
 	"fmt"
-	"jira-for-peasents/config"
-	datastore "jira-for-peasents/db"
-	"jira-for-peasents/errors"
+	"jira-for-peasants/config"
+	datastore "jira-for-peasants/db"
+	"jira-for-peasants/errors"
 	"net/http"
 	"os"
 	"os/signal"

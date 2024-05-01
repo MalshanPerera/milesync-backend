@@ -1,8 +1,8 @@
 package middlewares
 
 import (
-	"jira-for-peasents/errors"
-	"jira-for-peasents/utils"
+	"jira-for-peasants/errors"
+	"jira-for-peasants/utils"
 	"net/http"
 	"strings"
 

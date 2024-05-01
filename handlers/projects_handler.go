@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	"jira-for-peasents/services"
+	"jira-for-peasants/services"
 	"net/http"
 
 	"github.com/labstack/echo/v4"

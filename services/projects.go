@@ -1,6 +1,6 @@
 package services
 
-import datastore "jira-for-peasents/db"
+import datastore "jira-for-peasants/db"
 
 type ProjectService struct {
 	db *datastore.DB

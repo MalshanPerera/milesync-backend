@@ -1,10 +1,10 @@
 package server
 
 import (
-	"jira-for-peasents/common"
-	"jira-for-peasents/handlers"
-	"jira-for-peasents/middlewares"
-	"jira-for-peasents/services"
+	"jira-for-peasants/common"
+	"jira-for-peasants/handlers"
+	"jira-for-peasants/middlewares"
+	"jira-for-peasants/services"
 )
 
 func ConfigureRoutes(

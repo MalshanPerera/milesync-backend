@@ -1,7 +1,7 @@
 package config
 
 import (
-	"jira-for-peasents/errors"
+	"jira-for-peasants/errors"
 	"os"
 
 	"github.com/joho/godotenv"
