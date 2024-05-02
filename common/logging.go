@@ -15,7 +15,7 @@ type MyLogger struct {
 
 var Logger MyLogger
 
-func NewLogger() MyLogger {
+func init() {
 	// create output configuration
 	output := zerolog.ConsoleWriter{Out: os.Stdout, TimeFormat: time.RFC3339}
 
@@ -38,7 +38,6 @@ func NewLogger() MyLogger {
 
 	zerolog := zerolog.New(output).With().Caller().Timestamp().Logger()
 	Logger = MyLogger{zerolog}
-	return Logger
 }
 
 func getColorByLevel(level string) (string, string) {
