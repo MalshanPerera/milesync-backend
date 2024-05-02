@@ -10,3 +10,5 @@ tmp/
 # OS generated files #
 ######################
 .DS_Store
+
+temp_migrations

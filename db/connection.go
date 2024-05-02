@@ -46,6 +46,27 @@ func NewDB(
 	return d
 }
 
+func NewDBFromConnectionString(connStr string) *DB {
+	var err error
+	d := &DB{}
+	d.pool, err = pgxpool.New(context.Background(), connStr)
+
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
+		os.Exit(1)
+	}
+
+	err = d.pool.Ping(context.Background())
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Unable to ping database: %v\n", err)
+		os.Exit(1)
+	}
+	d.query = sqlc.New(d.pool)
+	fmt.Println("Connected to database")
+
+	return d
+}
+
 func (d *DB) Close() {
 	d.pool.Close()
 }

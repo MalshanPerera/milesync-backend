@@ -21,8 +21,9 @@ tidy:
 	go fmt ./...
 	go mod tidy -v
 
+.PHONY: test
 test:
-	go test -v ./... -count=1
+	ENV=CI	go test -v ./... -count=1
 
 sqlc:
 	@echo "Generating SQLC..."
