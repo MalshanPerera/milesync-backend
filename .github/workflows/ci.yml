@@ -27,7 +27,7 @@ jobs:
           echo "DB_PASSWORD=imfake" >> .env
           echo "JWT_SECRET=imfake" >> .env
           echo "JWT_EXPIRED=3600" >> .env
-          ¸
+
       - name: Build
         run: make build
 
