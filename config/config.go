@@ -4,7 +4,7 @@ import (
 	"jira-for-peasants/errors"
 	"os"
 
-	"github.com/joho/godotenv"
+	_ "github.com/joho/godotenv/autoload"
 )
 
 type DBConfig struct {
@@ -63,11 +63,6 @@ func (e *Config) Validate() error {
 }
 
 func NewConfig() *Config {
-	err := godotenv.Load()
-	if err != nil {
-		panic(err)
-	}
-
 	dbConfig := DBConfig{
 		User:         os.Getenv("DB_USERNAME"),
 		Password:     os.Getenv("DB_PASSWORD"),
