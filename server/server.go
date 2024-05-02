@@ -6,6 +6,7 @@ import (
 	"jira-for-peasants/config"
 	datastore "jira-for-peasants/db"
 	"jira-for-peasants/errors"
+	"jira-for-peasants/utils"
 	"net/http"
 	"os"
 	"os/signal"
@@ -38,6 +39,7 @@ func NewServer() *Server {
 	config := config.NewConfig()
 	err := config.Validate()
 	if err == nil {
+		utils.InitJwt()
 		db := datastore.NewDB(config.DB.User, config.DB.Password, config.DB.Host, config.DB.Port, config.DB.DatabaseName)
 		return &Server{
 			Echo:   echo.New(),

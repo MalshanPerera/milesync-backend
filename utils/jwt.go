@@ -20,11 +20,12 @@ var Type = TokenType{
 	RefreshToken: "refresh_token",
 }
 
-var secretKey = []byte(config.NewConfig().Auth.Secret)
+var secretKey []byte
 var jwtExpiry time.Duration
 
-func init() {
+func InitJwt() {
 	secret := config.NewConfig().Auth.Expiry
+	secretKey = []byte(config.NewConfig().Auth.Secret)
 
 	expiryHours, err := strconv.Atoi(secret)
 	if err != nil {
