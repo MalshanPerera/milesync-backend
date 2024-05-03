@@ -3,6 +3,7 @@ package services_test
 import (
 	"context"
 	datastore "jira-for-peasants/db"
+	"jira-for-peasants/repositories"
 	"jira-for-peasants/services"
 	testUtils "jira-for-peasants/test_utils"
 	"log"
@@ -31,23 +32,33 @@ func (suite *OrganizationServiceTestSuite) SetupSuite() {
 	}
 	suite.pgContainer = pgContainer
 	db := datastore.NewDBFromConnectionString(pgContainer.ConnectionString)
-	suite.organizationService = services.NewOrganizationService(db)
-	suite.userService = services.NewUserService(db)
+
+	organizationRepository := repositories.NewOrganizationRepository(db)
+	userRepository := repositories.NewUserRepository(db)
+	sessionRepository := repositories.NewSessionRepository(db)
+	suite.organizationService = services.NewOrganizationService(organizationRepository)
+	suite.userService = services.NewUserService(
+		userRepository,
+		sessionRepository,
+	)
 }
 
 func (suite *OrganizationServiceTestSuite) TestCreateOrganization() {
-	user, err := suite.userService.GetUserFromEmail(suite.ctx, "john@maclane.com")
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	_, err = suite.organizationService.CreateOrganization(suite.ctx, services.CreateOrganizationParams{
+	_, err := suite.organizationService.CreateOrganization(suite.ctx, services.CreateOrganizationParams{
 		Name:   "Die Hard",
-		UserId: user.ID,
+		UserId: "123123",
 	})
 
 	suite.Nil(err)
+}
+
+func (suite *OrganizationServiceTestSuite) TestCreateOrganizationWithInvalidUser() {
+	_, err := suite.organizationService.CreateOrganization(suite.ctx, services.CreateOrganizationParams{
+		Name:   "Invalid User",
+		UserId: "INoExist",
+	})
+
+	suite.NotNil(err)
 }
 
 func (suite *OrganizationServiceTestSuite) TearDownSuite() {

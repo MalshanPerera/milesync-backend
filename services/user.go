@@ -2,19 +2,23 @@ package services
 
 import (
 	"context"
-	datastore "jira-for-peasants/db"
-	db "jira-for-peasants/db/sqlc"
 	"jira-for-peasants/errors"
+	repo "jira-for-peasants/repositories"
 	"jira-for-peasants/utils"
 )
 
 type UserService struct {
-	db *datastore.DB
+	userRepository    repo.UserRepository
+	sessionRepository repo.SessionRepository
 }
 
-func NewUserService(db *datastore.DB) *UserService {
+func NewUserService(
+	userRepository *repo.UserRepository,
+	sessionRepository *repo.SessionRepository,
+) *UserService {
 	return &UserService{
-		db: db,
+		userRepository:    *userRepository,
+		sessionRepository: *sessionRepository,
 	}
 }
 
@@ -36,94 +40,102 @@ type UpdateUserParams struct {
 	Email     string
 }
 
-func (s *UserService) CreateUser(ctx context.Context, params CreateUserParams) (db.User, db.Session, error) {
-	hashedPassword, e := utils.GenerateFromPassword(params.Password)
-	if e != nil {
-		return db.User{}, db.Session{}, e
-	}
-	tx, err := s.db.BeginTx(ctx)
+func (s *UserService) CreateUser(ctx context.Context, params CreateUserParams) (repo.UserModel, repo.SessionModel, error) {
+	tx, err := s.userRepository.BeginTx(ctx)
 
 	if err != nil {
-		return db.User{}, db.Session{}, errors.NewDBError(err.Error())
+		return repo.UserModel{}, repo.SessionModel{}, err
 	}
 
 	defer func() {
-		err = s.db.RollbackTx(ctx, tx)
+		err = s.userRepository.RollbackTx(ctx, tx)
+		if err != nil {
+			return
+		}
 	}()
 
-	newUser, e := s.db.GetQuery().WithTx(tx).CreateUser(ctx, db.CreateUserParams{
+	newUser, err := s.userRepository.CreateUser(ctx, tx, repo.CreateUserParams{
 		FirstName: params.FirstName,
 		LastName:  params.LastName,
 		Email:     params.Email,
-		Password:  hashedPassword,
+		Password:  params.Password,
 	})
 
-	if e != nil {
-		return db.User{}, db.Session{}, e
+	if err != nil {
+		return repo.UserModel{}, repo.SessionModel{}, err
 	}
 
 	accessToken, expiredAt, err := utils.CreateToken(newUser.ID, utils.Type.AccessToken)
 	if err != nil {
-		return db.User{}, db.Session{}, err
+		return repo.UserModel{}, repo.SessionModel{}, err
 	}
 
 	refreshToken, _, err := utils.CreateToken(newUser.ID, utils.Type.RefreshToken)
 	if err != nil {
-		return db.User{}, db.Session{}, err
+		return repo.UserModel{}, repo.SessionModel{}, err
 	}
 
-	session, e := s.db.GetQuery().WithTx(tx).CreateSession(ctx, db.CreateSessionParams{
+	session, err := s.sessionRepository.CreateSession(ctx, tx, repo.CreateSessionParams{
 		UserID:       newUser.ID,
 		AccessToken:  accessToken,
 		RefreshToken: refreshToken,
 		ExpiresAt:    expiredAt,
 	})
 
-	if e != nil {
-		return db.User{}, db.Session{}, e
-	}
+	tx.Commit(ctx)
 
-	e = s.db.CommitTx(ctx, tx)
-
-	if e != nil {
-		return db.User{}, db.Session{}, e
+	if err != nil {
+		return repo.UserModel{}, repo.SessionModel{}, err
 	}
 
 	return newUser, session, nil
 }
 
-func (s *UserService) LoginUser(ctx context.Context, params LoginUserParams) (db.Session, error) {
-	existingUser, e := s.db.GetQuery().GetUserFromEmail(ctx, params.Email)
+func (s *UserService) LoginUser(ctx context.Context, params LoginUserParams) (repo.UserModel, repo.SessionModel, error) {
+	tx, err := s.userRepository.BeginTx(ctx)
 
-	if e != nil {
-		return db.Session{}, e
+	if err != nil {
+		return repo.UserModel{}, repo.SessionModel{}, err
 	}
 
-	match, e := utils.ComparePasswordAndHash(params.Password, existingUser.Password)
+	defer func() {
+		err = s.userRepository.RollbackTx(ctx, tx)
+		if err != nil {
+			return
+		}
+	}()
 
-	if !match || e != nil {
-		return db.Session{}, e
+	existingUser, err := s.userRepository.GetUserFromEmail(ctx, params.Email)
+
+	if err != nil {
+		return repo.UserModel{}, repo.SessionModel{}, err
+	}
+
+	match, err := utils.ComparePasswordAndHash(params.Password, existingUser.Password)
+
+	if !match || err != nil {
+		return repo.UserModel{}, repo.SessionModel{}, errors.NoResults
 	}
 
 	accessToken, expiredAt, err := utils.CreateToken(existingUser.ID, utils.Type.AccessToken)
 	if err != nil {
-		return db.Session{}, err
+		return repo.UserModel{}, repo.SessionModel{}, err
 	}
 
 	refreshToken, _, err := utils.CreateToken(existingUser.ID, utils.Type.RefreshToken)
 	if err != nil {
-		return db.Session{}, err
+		return repo.UserModel{}, repo.SessionModel{}, err
 	}
 
-	session, e := s.db.GetQuery().UpdateSession(ctx, db.UpdateSessionParams{
+	session, err := s.sessionRepository.UpdateSession(ctx, tx, repo.CreateSessionParams{
 		UserID:       existingUser.ID,
 		AccessToken:  accessToken,
 		RefreshToken: refreshToken,
 		ExpiresAt:    expiredAt,
 	})
 
-	if e == errors.NoResults {
-		session, e = s.db.GetQuery().CreateSession(ctx, db.CreateSessionParams{
+	if err == errors.NoResults {
+		session, err = s.sessionRepository.CreateSession(ctx, tx, repo.CreateSessionParams{
 			UserID:       existingUser.ID,
 			AccessToken:  accessToken,
 			RefreshToken: refreshToken,
@@ -131,45 +143,9 @@ func (s *UserService) LoginUser(ctx context.Context, params LoginUserParams) (db
 		})
 	}
 
-	if e != nil {
-		return db.Session{}, e
+	if err != nil {
+		return repo.UserModel{}, repo.SessionModel{}, err
 	}
 
-	return session, nil
-}
-
-func (s *UserService) GetUserFromId(ctx context.Context, id string) (db.User, error) {
-	existingUser, e := s.db.GetQuery().GetUser(ctx, id)
-
-	if e != nil {
-		return db.User{}, e
-	}
-
-	return existingUser, e
-}
-
-func (s *UserService) GetUserFromEmail(ctx context.Context, email string) (db.User, error) {
-	existingUser, e := s.db.GetQuery().GetUserFromEmail(ctx, email)
-
-	if e != nil {
-		return db.User{}, e
-	}
-
-	return existingUser, e
-}
-
-func (s *UserService) UpdateUser(ctx context.Context, id string, params UpdateUserParams) (db.User, error) {
-
-	updatedUser, e := s.db.GetQuery().UpdateUser(ctx, db.UpdateUserParams{
-		ID:        id,
-		FirstName: params.FirstName,
-		LastName:  params.LastName,
-		Email:     params.Email,
-	})
-
-	if e != nil {
-		return db.User{}, e
-	}
-
-	return updatedUser, e
+	return existingUser, session, nil
 }

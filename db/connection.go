@@ -79,14 +79,24 @@ func (d *DB) GetQuery() *sqlc.Queries {
 	return d.query
 }
 
-func (d *DB) BeginTx(ctx context.Context) (pgx.Tx, error) {
-	return d.pool.Begin(ctx)
+type Trx struct {
+	db *DB
 }
 
-func (d *DB) RollbackTx(ctx context.Context, tx pgx.Tx) error {
+func NewTrx(db *DB) *Trx {
+	return &Trx{
+		db: db,
+	}
+}
+
+func (d *Trx) BeginTx(ctx context.Context) (pgx.Tx, error) {
+	return d.db.pool.Begin(ctx)
+}
+
+func (d *Trx) RollbackTx(ctx context.Context, tx pgx.Tx) error {
 	return tx.Rollback(ctx)
 }
 
-func (d *DB) CommitTx(ctx context.Context, tx pgx.Tx) error {
+func (d *Trx) CommitTx(ctx context.Context, tx pgx.Tx) error {
 	return tx.Commit(ctx)
 }
