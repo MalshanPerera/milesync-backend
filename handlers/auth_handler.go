@@ -36,22 +36,13 @@ func (h *AuthHandler) handleRegisterUser(c echo.Context) error {
 		return err
 	}
 
-	_, err := h.userService.GetUserFromEmail(ctx, u.Email)
-
-	if err != nil && err != errors.NoResults {
-		return err
-	}
-
-	if err == nil {
-		return errors.BadRequest("User already exists")
-	}
-
 	newUser, newSession, err := h.userService.CreateUser(ctx, services.CreateUserParams{
 		FirstName: u.FirstName,
 		LastName:  u.LastName,
 		Email:     u.Email,
 		Password:  u.Password,
 	})
+
 	if err != nil {
 		return err
 	}
@@ -77,21 +68,12 @@ func (h *AuthHandler) handleLoginUser(c echo.Context) error {
 		return err
 	}
 
-	existingUser, err := h.userService.GetUserFromEmail(ctx, u.Email)
-	if err != nil && err != errors.NoResults {
-		return err
-	}
-
-	if err != nil {
-		return errors.BadRequest("User does not exist")
-	}
-
-	newSession, err := h.userService.LoginUser(ctx, services.LoginUserParams{
+	existingUser, newSession, err := h.userService.LoginUser(ctx, services.LoginUserParams{
 		Email:    u.Email,
 		Password: u.Password,
 	})
 	if err != nil {
-		return err
+		return errors.BadRequest(errors.InvalidPassword)
 	}
 
 	return c.JSON(http.StatusOK, responses.NewAuthResponse(

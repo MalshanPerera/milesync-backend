@@ -4,6 +4,7 @@ import (
 	"jira-for-peasants/common"
 	"jira-for-peasants/handlers"
 	"jira-for-peasants/middlewares"
+	"jira-for-peasants/repositories"
 	"jira-for-peasants/services"
 )
 
@@ -12,10 +13,17 @@ func ConfigureRoutes(
 ) {
 	apiV1 := s.Echo.Group("/api/v1")
 
+	sessionRepository := repositories.NewSessionRepository(s.DB)
+	userRepository := repositories.NewUserRepository(s.DB)
+	organizationRepository := repositories.NewOrganizationRepository(s.DB)
+
 	// Registering services
-	userService := services.NewUserService(s.DB)
+	userService := services.NewUserService(
+		userRepository,
+		sessionRepository,
+	)
 	projectService := services.NewProjectService(s.DB)
-	organizationService := services.NewOrganizationService(s.DB)
+	organizationService := services.NewOrganizationService(organizationRepository)
 
 	// Registering handlers
 	authHandler := handlers.NewAuthHandler(userService)

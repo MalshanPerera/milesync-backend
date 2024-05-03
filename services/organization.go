@@ -2,18 +2,17 @@ package services
 
 import (
 	"context"
-	datastore "jira-for-peasants/db"
-	db "jira-for-peasants/db/sqlc"
+	repo "jira-for-peasants/repositories"
 	"strings"
 )
 
 type OrganizationService struct {
-	db *datastore.DB
+	organizationRepository *repo.OrganizationRepository
 }
 
-func NewOrganizationService(db *datastore.DB) *OrganizationService {
+func NewOrganizationService(organizationRepo *repo.OrganizationRepository) *OrganizationService {
 	return &OrganizationService{
-		db: db,
+		organizationRepository: organizationRepo,
 	}
 }
 
@@ -26,16 +25,15 @@ func createSlug(name string) string {
 	return strings.ToLower(strings.ReplaceAll(name, " ", "-"))
 }
 
-func (s *OrganizationService) CreateOrganization(ctx context.Context, params CreateOrganizationParams) (db.Organization, error) {
-
-	organization, e := s.db.GetQuery().CreateOrganization(ctx, db.CreateOrganizationParams{
+func (s *OrganizationService) CreateOrganization(ctx context.Context, params CreateOrganizationParams) (repo.OrganizationModel, error) {
+	organization, err := s.organizationRepository.CreateOrganization(ctx, repo.CreateOrganizationParams{
 		Name:   params.Name,
-		UserID: params.UserId,
+		UserId: params.UserId,
 		Slug:   createSlug(params.Name),
 	})
 
-	if e != nil {
-		return db.Organization{}, e
+	if err != nil {
+		return repo.OrganizationModel{}, err
 	}
 
 	return organization, nil
@@ -43,10 +41,10 @@ func (s *OrganizationService) CreateOrganization(ctx context.Context, params Cre
 
 func (s *OrganizationService) DeleteOrganization(ctx context.Context, userId string) error {
 
-	e := s.db.GetQuery().DeleteOrganization(ctx, userId)
+	err := s.organizationRepository.DeleteOrganization(ctx, userId)
 
-	if e != nil {
-		return e
+	if err != nil {
+		return err
 	}
 
 	return nil
@@ -54,9 +52,9 @@ func (s *OrganizationService) DeleteOrganization(ctx context.Context, userId str
 
 func (s *OrganizationService) GetOrganizationSlugUsed(ctx context.Context, name string) (bool, error) {
 	slug := createSlug(name)
-	return s.db.GetQuery().GetOrganizationSlugUsed(ctx, slug)
+	return s.organizationRepository.GetOrganizationSlugUsed(ctx, slug)
 }
 
-func (s *OrganizationService) GetOrganization(ctx context.Context, slug string) (db.Organization, error) {
-	return s.db.GetQuery().GetOrganization(ctx, slug)
+func (s *OrganizationService) GetOrganization(ctx context.Context, slug string) (repo.OrganizationModel, error) {
+	return s.organizationRepository.GetOrganization(ctx, slug)
 }
