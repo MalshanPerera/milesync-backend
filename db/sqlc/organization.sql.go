@@ -67,6 +67,25 @@ func (q *Queries) GetOrganization(ctx context.Context, userID string) (Organizat
 	return i, err
 }
 
+const getOrganizationByUserId = `-- name: GetOrganizationByUserId :one
+SELECT id, user_id, name, slug, created_at, updated_at FROM organization
+WHERE user_id = $1 LIMIT 1
+`
+
+func (q *Queries) GetOrganizationByUserId(ctx context.Context, userID string) (Organization, error) {
+	row := q.db.QueryRow(ctx, getOrganizationByUserId, userID)
+	var i Organization
+	err := row.Scan(
+		&i.ID,
+		&i.UserID,
+		&i.Name,
+		&i.Slug,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
 const getOrganizationSlugUsed = `-- name: GetOrganizationSlugUsed :one
 SELECT EXISTS (
     SELECT 1

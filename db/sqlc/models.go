@@ -17,6 +17,44 @@ type Organization struct {
 	UpdatedAt pgtype.Timestamp
 }
 
+type Project struct {
+	ID             string
+	UserID         string
+	OrganizationID string
+	Name           string
+	KeyPrefix      string
+	CreatedAt      pgtype.Timestamp
+	UpdatedAt      pgtype.Timestamp
+}
+
+type ProjectsUser struct {
+	ID        string
+	ProjectID string
+	UserID    string
+	CreatedAt pgtype.Timestamp
+	UpdatedAt pgtype.Timestamp
+}
+
+type Role struct {
+	ID             string
+	OrganizationID string
+	DefaultID      pgtype.Text
+	Name           string
+	Description    string
+	Permissions    []string
+	CreatedAt      pgtype.Timestamp
+	UpdatedAt      pgtype.Timestamp
+}
+
+type RolesProject struct {
+	ID        string
+	RoleID    string
+	ProjectID string
+	UserID    string
+	CreatedAt pgtype.Timestamp
+	UpdatedAt pgtype.Timestamp
+}
+
 type Session struct {
 	ID           string
 	UserID       string

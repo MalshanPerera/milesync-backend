@@ -34,3 +34,8 @@ SET user_id = $2
 WHERE user_id = $1
 
 RETURNING *;
+
+
+-- name: GetOrganizationByUserId :one
+SELECT * FROM organization
+WHERE user_id = $1 LIMIT 1;

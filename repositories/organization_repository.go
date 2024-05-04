@@ -59,3 +59,12 @@ func (s *OrganizationRepository) GetOrganization(ctx context.Context, slug strin
 	res, err := s.db.GetQuery().GetOrganization(ctx, slug)
 	return OrganizationModel(res), err
 }
+
+func (s *OrganizationRepository) GetOrganizationByUserId(ctx context.Context, userId string) (OrganizationModel, error) {
+	res, err := s.db.GetQuery().GetOrganizationByUserId(ctx, userId)
+	if err != nil {
+		return OrganizationModel{}, err
+	}
+
+	return OrganizationModel(res), nil
+}
