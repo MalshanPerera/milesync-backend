@@ -26,8 +26,8 @@ func NewOrganizationRepository(db *datastore.DB) *OrganizationRepository {
 	}
 }
 
-func (s *OrganizationRepository) CreateOrganization(ctx context.Context, params CreateOrganizationParams) (OrganizationModel, error) {
-	organization, err := s.db.GetQuery().CreateOrganization(ctx, db.CreateOrganizationParams{
+func (repo *OrganizationRepository) CreateOrganization(ctx context.Context, params CreateOrganizationParams) (OrganizationModel, error) {
+	organization, err := repo.db.GetQuery().CreateOrganization(ctx, db.CreateOrganizationParams{
 		Name:   params.Name,
 		UserID: params.UserId,
 		Slug:   params.Slug,
@@ -40,9 +40,9 @@ func (s *OrganizationRepository) CreateOrganization(ctx context.Context, params 
 	return OrganizationModel(organization), nil
 }
 
-func (s *OrganizationRepository) DeleteOrganization(ctx context.Context, userId string) error {
+func (repo *OrganizationRepository) DeleteOrganization(ctx context.Context, userId string) error {
 
-	err := s.db.GetQuery().DeleteOrganization(ctx, userId)
+	err := repo.db.GetQuery().DeleteOrganization(ctx, userId)
 
 	if err != nil {
 		return err
@@ -51,8 +51,8 @@ func (s *OrganizationRepository) DeleteOrganization(ctx context.Context, userId 
 	return nil
 }
 
-func (s *OrganizationRepository) GetOrganizationSlugUsed(ctx context.Context, slug string) (bool, error) {
-	return s.db.GetQuery().GetOrganizationSlugUsed(ctx, slug)
+func (repo *OrganizationRepository) GetOrganizationSlugUsed(ctx context.Context, slug string) (bool, error) {
+	return repo.db.GetQuery().GetOrganizationSlugUsed(ctx, slug)
 }
 
 func (s *OrganizationRepository) GetOrganization(ctx context.Context, slug string) (OrganizationModel, error) {
@@ -60,8 +60,8 @@ func (s *OrganizationRepository) GetOrganization(ctx context.Context, slug strin
 	return OrganizationModel(res), err
 }
 
-func (s *OrganizationRepository) GetOrganizationByUserId(ctx context.Context, userId string) (OrganizationModel, error) {
-	res, err := s.db.GetQuery().GetOrganizationByUserId(ctx, userId)
+func (repo *OrganizationRepository) GetOrganizationByUserId(ctx context.Context, userId string) (OrganizationModel, error) {
+	res, err := repo.db.GetQuery().GetOrganizationByUserId(ctx, userId)
 	if err != nil {
 		return OrganizationModel{}, err
 	}
