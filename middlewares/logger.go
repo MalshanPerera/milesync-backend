@@ -2,7 +2,7 @@ package middlewares
 
 import (
 	"jira-for-peasants/common"
-	err_pkg "jira-for-peasants/errors"
+	errpkg "jira-for-peasants/errors"
 
 	"github.com/labstack/echo/v4"
 )
@@ -20,7 +20,7 @@ func LoggingMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
 		err := next(c)
 		if err != nil {
 
-			if e, ok := err.(err_pkg.ApiError); ok {
+			if e, ok := err.(errpkg.ApiError); ok {
 				common.Logger.LogInfo().Fields(map[string]interface{}{
 					"info": e.Error(),
 				}).Msg("Response")

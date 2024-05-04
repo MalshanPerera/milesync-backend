@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	err_pkg "jira-for-peasants/errors"
+	errpkg "jira-for-peasants/errors"
 	"jira-for-peasants/requests"
 	"jira-for-peasants/responses"
 	"jira-for-peasants/services"
@@ -35,10 +35,10 @@ func (h *ProjectHandler) handleCreateProject(c echo.Context) error {
 	u := new(requests.CreateProjectRequest)
 	ctx := c.Request().Context()
 	if err := c.Bind(u); err != nil {
-		return err_pkg.BadRequest(err.Error())
+		return errpkg.BadRequest(err.Error())
 	}
 	if err := c.Validate(u); err != nil {
-		return err_pkg.UnprocessableEntity(err.Error())
+		return errpkg.UnprocessableEntity(err.Error())
 	}
 
 	status, e := h.projectService.GetProjectKeyPrefixUsed(ctx, u.KeyPrefix)
@@ -48,7 +48,7 @@ func (h *ProjectHandler) handleCreateProject(c echo.Context) error {
 	}
 
 	if status {
-		return err_pkg.BadRequest(err_pkg.ProjectKeyPrefixUsed)
+		return errpkg.BadRequest(errpkg.ProjectKeyPrefixUsed)
 	}
 
 	newProject, err := h.projectService.CreateProject(ctx, services.CreateProjectParams{

@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	err_pkg "jira-for-peasants/errors"
+	errpkg "jira-for-peasants/errors"
 	"jira-for-peasants/requests"
 	"jira-for-peasants/responses"
 	"jira-for-peasants/services"
@@ -30,10 +30,10 @@ func (h *AuthHandler) handleRegisterUser(c echo.Context) error {
 	u := new(requests.RegisterUserRequest)
 	ctx := c.Request().Context()
 	if err := c.Bind(u); err != nil {
-		return err_pkg.BadRequest(err.Error())
+		return errpkg.BadRequest(err.Error())
 	}
 	if err := c.Validate(u); err != nil {
-		return err_pkg.UnprocessableEntity(err.Error())
+		return errpkg.UnprocessableEntity(err.Error())
 	}
 
 	newUser, newSession, err := h.userService.CreateUser(ctx, services.CreateUserParams{
@@ -73,7 +73,7 @@ func (h *AuthHandler) handleLoginUser(c echo.Context) error {
 		Password: u.Password,
 	})
 	if err != nil {
-		return err_pkg.BadRequest(err_pkg.InvalidPassword)
+		return errpkg.BadRequest(errpkg.InvalidPassword)
 	}
 
 	return c.JSON(http.StatusOK, responses.NewAuthResponse(

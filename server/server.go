@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"jira-for-peasants/config"
 	datastore "jira-for-peasants/db"
-	err_pkg "jira-for-peasants/errors"
+	errpkg "jira-for-peasants/errors"
 	"jira-for-peasants/utils"
 	"net/http"
 	"os"
@@ -64,7 +64,7 @@ func (s *Server) SetupErrorHandler() {
 		}
 
 		// check if error is known type to be handled differently
-		if myErr, ok := err.(err_pkg.ApiError); ok {
+		if myErr, ok := err.(errpkg.ApiError); ok {
 			if err := c.JSON(myErr.Code, map[string]string{
 				"code":    fmt.Sprintf("%d", myErr.Code),
 				"message": myErr.Message,

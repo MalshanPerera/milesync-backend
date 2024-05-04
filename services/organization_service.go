@@ -2,7 +2,7 @@ package services
 
 import (
 	"context"
-	err_pkg "jira-for-peasants/errors"
+	errpkg "jira-for-peasants/errors"
 	repo "jira-for-peasants/repositories"
 	"strings"
 )
@@ -29,8 +29,8 @@ func createSlug(name string) string {
 func (s *OrganizationService) CreateOrganization(ctx context.Context, params CreateOrganizationParams) (repo.OrganizationModel, error) {
 	_, err := s.organizationRepository.GetOrganizationByUserId(ctx, params.UserId)
 
-	if err != err_pkg.NoResults {
-		return repo.OrganizationModel{}, err_pkg.ServiceError(err_pkg.UserAlreadyHasOrganization)
+	if err != errpkg.NoResults {
+		return repo.OrganizationModel{}, errpkg.ServiceError(errpkg.UserAlreadyHasOrganization)
 	}
 
 	organization, err := s.organizationRepository.CreateOrganization(ctx, repo.CreateOrganizationParams{

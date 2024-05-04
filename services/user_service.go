@@ -2,7 +2,8 @@ package services
 
 import (
 	"context"
-	err_pkg "jira-for-peasants/errors"
+	"errors"
+	errpkg "jira-for-peasants/errors"
 	repo "jira-for-peasants/repositories"
 	"jira-for-peasants/utils"
 )
@@ -114,7 +115,7 @@ func (s *UserService) LoginUser(ctx context.Context, params LoginUserParams) (re
 	match, err := utils.ComparePasswordAndHash(params.Password, existingUser.Password)
 
 	if !match || err != nil {
-		return repo.UserModel{}, repo.SessionModel{}, err_pkg.NoResults
+		return repo.UserModel{}, repo.SessionModel{}, errpkg.NoResults
 	}
 
 	accessToken, expiredAt, err := utils.CreateToken(existingUser.ID, utils.Type.AccessToken)
@@ -134,7 +135,7 @@ func (s *UserService) LoginUser(ctx context.Context, params LoginUserParams) (re
 		ExpiresAt:    expiredAt,
 	})
 
-	if err == err_pkg.NoResults {
+	if errors.Is(err, errpkg.NoResults) {
 		session, err = s.sessionRepository.CreateSession(ctx, tx, repo.CreateSessionParams{
 			UserID:       existingUser.ID,
 			AccessToken:  accessToken,
@@ -143,6 +144,11 @@ func (s *UserService) LoginUser(ctx context.Context, params LoginUserParams) (re
 		})
 	}
 
+	if err != nil {
+		return repo.UserModel{}, repo.SessionModel{}, err
+	}
+
+	err = tx.Commit(ctx)
 	if err != nil {
 		return repo.UserModel{}, repo.SessionModel{}, err
 	}

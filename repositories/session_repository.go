@@ -11,13 +11,8 @@ import (
 type SessionModel db.Session
 
 type SessionRepository struct {
+	*datastore.Trx
 	db *datastore.DB
-}
-
-func NewSessionRepository(db *datastore.DB) *SessionRepository {
-	return &SessionRepository{
-		db: db,
-	}
 }
 
 type CreateSessionParams struct {
@@ -25,6 +20,13 @@ type CreateSessionParams struct {
 	AccessToken  string
 	RefreshToken string
 	ExpiresAt    int64
+}
+
+func NewSessionRepository(db *datastore.DB) *SessionRepository {
+	return &SessionRepository{
+		db:  db,
+		Trx: datastore.NewTrx(db),
+	}
 }
 
 func (repo *SessionRepository) CreateSession(ctx context.Context, tx pgx.Tx, params CreateSessionParams) (SessionModel, error) {
@@ -54,4 +56,17 @@ func (repo *SessionRepository) UpdateSession(ctx context.Context, tx pgx.Tx, par
 	}
 
 	return SessionModel(session), nil
+}
+
+func (repo *SessionRepository) GetSessionByUserId(ctx context.Context, userId string) (SessionModel, error) {
+	session, err := repo.db.GetQuery().GetSessionByUserId(ctx, userId)
+	if err != nil {
+		return SessionModel{}, err
+	}
+
+	return SessionModel(session), nil
+}
+
+func (repo *SessionRepository) DeleteSession(ctx context.Context, tx pgx.Tx, userId string) error {
+	return repo.db.GetQuery().WithTx(tx).DeleteSession(ctx, userId)
 }

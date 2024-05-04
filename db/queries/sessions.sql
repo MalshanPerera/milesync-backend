@@ -12,7 +12,7 @@ SET "access_token" = $2, "refresh_token" = $3, "expires_at" = $4
 WHERE user_id = $1
 RETURNING *;
 
--- name: GetSession :one
+-- name: GetSessionByUserId :one
 SELECT * FROM sessions
 WHERE user_id = $1 LIMIT 1;
 

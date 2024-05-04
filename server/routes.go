@@ -24,26 +24,27 @@ func ConfigureRoutes(
 		sessionRepository,
 	)
 
+	sessionService := services.NewSessionService(sessionRepository)
 	projectService := services.NewProjectService(projectsRepository)
 	organizationService := services.NewOrganizationService(organizationRepository)
 
 	// Registering handlers
 	authHandler := handlers.NewAuthHandler(userService)
-	projectHandler := handlers.NewProjectHandler(projectService)
 	organizationHandler := handlers.NewOrganizationHandler(organizationService)
+	projectHandler := handlers.NewProjectHandler(projectService)
 
 	// Registering routes
 	authGroup := apiV1.Group("/auth")
 	authHandler.RegisterRoutes(authGroup)
 
 	protectedRoutes := apiV1.Group("")
-	protectedRoutes.Use(middlewares.IsAuthenticated)
-
-	projectGroup := protectedRoutes.Group("/projects")
-	projectHandler.RegisterRoutes(projectGroup)
+	protectedRoutes.Use(middlewares.IsAuthenticated(sessionService))
 
 	organizationGroup := protectedRoutes.Group("/organizations")
 	organizationHandler.RegisterRoutes(organizationGroup)
+
+	projectGroup := protectedRoutes.Group("/projects")
+	projectHandler.RegisterRoutes(projectGroup)
 
 	routeList := s.Echo.Routes()
 	for _, route := range routeList {
