@@ -1,4 +1,4 @@
-package errors
+package err_pkg
 
 var (
 	UserNotFound               = "UserNotFound"

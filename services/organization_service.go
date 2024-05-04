@@ -3,7 +3,7 @@ package services
 import (
 	"context"
 	goErr "errors"
-	"jira-for-peasants/errors"
+	err_pkg "jira-for-peasants/errors"
 	repo "jira-for-peasants/repositories"
 	"strings"
 )
@@ -30,8 +30,8 @@ func createSlug(name string) string {
 func (s *OrganizationService) CreateOrganization(ctx context.Context, params CreateOrganizationParams) (repo.OrganizationModel, error) {
 	_, err := s.organizationRepository.GetOrganizationByUserId(ctx, params.UserId)
 
-	if err != errors.NoResults {
-		return repo.OrganizationModel{}, goErr.New(errors.UserAlreadyHasOrganization)
+	if err != err_pkg.NoResults {
+		return repo.OrganizationModel{}, goErr.New(err_pkg.UserAlreadyHasOrganization)
 	}
 
 	organization, err := s.organizationRepository.CreateOrganization(ctx, repo.CreateOrganizationParams{

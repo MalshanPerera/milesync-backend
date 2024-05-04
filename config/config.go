@@ -1,7 +1,7 @@
 package config
 
 import (
-	"jira-for-peasants/errors"
+	err_pkg "jira-for-peasants/errors"
 	"os"
 
 	_ "github.com/joho/godotenv/autoload"
@@ -28,35 +28,35 @@ type Config struct {
 
 func (e *Config) Validate() error {
 	if e.Port == "" {
-		return errors.AppError{Message: "Port is required"}
+		return err_pkg.AppError{Message: "Port is required"}
 	}
 
 	if e.DB.User == "" {
-		return errors.AppError{Message: "DB User is required"}
+		return err_pkg.AppError{Message: "DB User is required"}
 	}
 
 	if e.DB.Password == "" {
-		return errors.AppError{Message: "DB Password is required"}
+		return err_pkg.AppError{Message: "DB Password is required"}
 	}
 
 	if e.DB.DatabaseName == "" {
-		return errors.AppError{Message: "DB Name is required"}
+		return err_pkg.AppError{Message: "DB Name is required"}
 	}
 
 	if e.DB.Host == "" {
-		return errors.AppError{Message: "DB Host is required"}
+		return err_pkg.AppError{Message: "DB Host is required"}
 	}
 
 	if e.DB.Port == "" {
-		return errors.AppError{Message: "DB Port is required"}
+		return err_pkg.AppError{Message: "DB Port is required"}
 	}
 
 	if e.Auth.Secret == "" {
-		return errors.AppError{Message: "Auth Secret is required"}
+		return err_pkg.AppError{Message: "Auth Secret is required"}
 	}
 
 	if e.Auth.Expiry == "" {
-		return errors.AppError{Message: "Auth Expiry is required"}
+		return err_pkg.AppError{Message: "Auth Expiry is required"}
 	}
 
 	return nil

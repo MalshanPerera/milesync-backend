@@ -1,4 +1,4 @@
-package errors
+package err_pkg
 
 import "github.com/jackc/pgx/v5"
 

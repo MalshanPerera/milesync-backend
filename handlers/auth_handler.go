@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	"jira-for-peasants/errors"
+	err_pkg "jira-for-peasants/errors"
 	"jira-for-peasants/requests"
 	"jira-for-peasants/responses"
 	"jira-for-peasants/services"
@@ -73,7 +73,7 @@ func (h *AuthHandler) handleLoginUser(c echo.Context) error {
 		Password: u.Password,
 	})
 	if err != nil {
-		return errors.BadRequest(errors.InvalidPassword)
+		return err_pkg.BadRequest(err_pkg.InvalidPassword)
 	}
 
 	return c.JSON(http.StatusOK, responses.NewAuthResponse(
