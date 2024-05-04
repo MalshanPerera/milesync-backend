@@ -27,7 +27,7 @@ func BadRequest(message string) ApiError {
 	}
 }
 
-func (e ApiError) UnprocessableEntity(message string) ApiError {
+func UnprocessableEntity(message string) ApiError {
 	return ApiError{
 		Code:    http.StatusUnprocessableEntity,
 		Message: message,

@@ -23,6 +23,7 @@ type Project struct {
 	OrganizationID string
 	Name           string
 	KeyPrefix      string
+	Type           string
 	CreatedAt      pgtype.Timestamp
 	UpdatedAt      pgtype.Timestamp
 }

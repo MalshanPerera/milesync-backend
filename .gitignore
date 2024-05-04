@@ -1,14 +1,18 @@
-#Build
+# Build
 bin/
 
-#Secrets
+# Secrets
 .env
 
-#Dev
+# Dev
 tmp/
 
 # OS generated files #
 ######################
 .DS_Store
 
+# Temporary files
 temp_migrations
+
+# JetBrains IDE
+.idea/

@@ -6,6 +6,7 @@ CREATE TABLE IF NOT EXISTS projects(
   organization_id TEXT NOT NULL REFERENCES organization(id) ON DELETE CASCADE,
   name TEXT NOT NULL,
   key_prefix TEXT NOT NULL,
+  type TEXT NOT NULL CHECK(type IN ('global', 'project', 'department')),
   created_at TIMESTAMP NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMP
 );

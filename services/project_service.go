@@ -2,8 +2,8 @@ package services
 
 import (
 	"context"
-	goErr "errors"
-	"jira-for-peasants/errors"
+	"errors"
+	err_pkg "jira-for-peasants/errors"
 	repo "jira-for-peasants/repositories"
 	"strings"
 )
@@ -33,8 +33,8 @@ func createKeyPrefix(key string) string {
 func (s *ProjectService) CreateProject(ctx context.Context, params CreateProjectParams) (repo.ProjectModel, error) {
 	_, err := s.projectRepository.GetProjectByKeyPrefix(ctx, params.KeyPrefix)
 
-	if err != errors.NoResults {
-		return repo.ProjectModel{}, goErr.New(errors.ProjectExists)
+	if err != err_pkg.NoResults {
+		return repo.ProjectModel{}, errors.New(err_pkg.ProjectExists)
 	}
 
 	project, err := s.projectRepository.CreateProject(ctx, repo.CreateProjectParams{

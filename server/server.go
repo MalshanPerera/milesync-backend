@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"jira-for-peasants/config"
 	datastore "jira-for-peasants/db"
@@ -36,14 +37,14 @@ func (cv *CustomValidator) Validate(i interface{}) error {
 }
 
 func NewServer() *Server {
-	config := config.NewConfig()
-	err := config.Validate()
+	cfg := config.NewConfig()
+	err := cfg.Validate()
 	if err == nil {
 		utils.InitJwt()
-		db := datastore.NewDB(config.DB.User, config.DB.Password, config.DB.Host, config.DB.Port, config.DB.DatabaseName)
+		db := datastore.NewDB(cfg.DB.User, cfg.DB.Password, cfg.DB.Host, cfg.DB.Port, cfg.DB.DatabaseName)
 		return &Server{
 			Echo:   echo.New(),
-			Config: config,
+			Config: cfg,
 			DB:     db,
 		}
 	}
@@ -73,7 +74,7 @@ func (s *Server) SetupErrorHandler() {
 			return
 		}
 
-		//TODO: handle other error types
+		// TODO: handle other error types
 		// use default error handler functionality
 		s.Echo.DefaultHTTPErrorHandler(err, c)
 	}
@@ -88,7 +89,7 @@ func (s *Server) Start() {
 	defer stop()
 	// Start server
 	go func() {
-		if err := s.Echo.Start(":" + s.Config.Port); err != nil && err != http.ErrServerClosed {
+		if err := s.Echo.Start(":" + s.Config.Port); err != nil && !errors.Is(err, http.ErrServerClosed) {
 			s.Echo.Logger.Fatal("shutting down the server", err)
 		}
 	}()

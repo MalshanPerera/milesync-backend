@@ -13,16 +13,18 @@ func ConfigureRoutes(
 ) {
 	apiV1 := s.Echo.Group("/api/v1")
 
-	sessionRepository := repositories.NewSessionRepository(s.DB)
 	userRepository := repositories.NewUserRepository(s.DB)
+	sessionRepository := repositories.NewSessionRepository(s.DB)
 	organizationRepository := repositories.NewOrganizationRepository(s.DB)
+	projectsRepository := repositories.NewProjectRepository(s.DB)
 
 	// Registering services
 	userService := services.NewUserService(
 		userRepository,
 		sessionRepository,
 	)
-	projectService := services.NewProjectService(s.DB)
+
+	projectService := services.NewProjectService(projectsRepository)
 	organizationService := services.NewOrganizationService(organizationRepository)
 
 	// Registering handlers

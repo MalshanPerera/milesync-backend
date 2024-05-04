@@ -30,10 +30,10 @@ func (h *AuthHandler) handleRegisterUser(c echo.Context) error {
 	u := new(requests.RegisterUserRequest)
 	ctx := c.Request().Context()
 	if err := c.Bind(u); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+		return err_pkg.BadRequest(err.Error())
 	}
 	if err := c.Validate(u); err != nil {
-		return err
+		return err_pkg.UnprocessableEntity(err.Error())
 	}
 
 	newUser, newSession, err := h.userService.CreateUser(ctx, services.CreateUserParams{
