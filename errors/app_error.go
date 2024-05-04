@@ -26,6 +26,10 @@ func NewAppError(message string) AppError {
 	}
 }
 
+func ServiceError(message string) error {
+	return NewAppError(message)
+}
+
 func (e AppError) Error() string {
 	return e.Message
 }

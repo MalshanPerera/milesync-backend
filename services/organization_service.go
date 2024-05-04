@@ -2,7 +2,6 @@ package services
 
 import (
 	"context"
-	"errors"
 	err_pkg "jira-for-peasants/errors"
 	repo "jira-for-peasants/repositories"
 	"strings"
@@ -31,7 +30,7 @@ func (s *OrganizationService) CreateOrganization(ctx context.Context, params Cre
 	_, err := s.organizationRepository.GetOrganizationByUserId(ctx, params.UserId)
 
 	if err != err_pkg.NoResults {
-		return repo.OrganizationModel{}, errors.New(err_pkg.UserAlreadyHasOrganization)
+		return repo.OrganizationModel{}, err_pkg.ServiceError(err_pkg.UserAlreadyHasOrganization)
 	}
 
 	organization, err := s.organizationRepository.CreateOrganization(ctx, repo.CreateOrganizationParams{
