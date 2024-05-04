@@ -28,10 +28,10 @@ func createSlug(name string) string {
 }
 
 func (s *OrganizationService) CreateOrganization(ctx context.Context, params CreateOrganizationParams) (repo.OrganizationModel, error) {
-	_, err := s.organizationRepository.GetOrganizationByUserId(ctx, params.Name)
+	_, err := s.organizationRepository.GetOrganizationByUserId(ctx, params.UserId)
 
 	if err != errors.NoResults {
-		return repo.OrganizationModel{}, goErr.New(errors.OrganizationExists)
+		return repo.OrganizationModel{}, goErr.New(errors.UserAlreadyHasOrganization)
 	}
 
 	organization, err := s.organizationRepository.CreateOrganization(ctx, repo.CreateOrganizationParams{
