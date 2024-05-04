@@ -53,6 +53,9 @@ func (h *OrganizationHandler) createOrganization(c echo.Context) error {
 	})
 
 	if err != nil {
+		if err.Error() == errors.UserAlreadyHasOrganization {
+			return errors.BadRequest(errors.UserAlreadyHasOrganization)
+		}
 		return err
 	}
 
