@@ -6,6 +6,7 @@ import (
 	repo "jira-for-peasants/repositories"
 	"jira-for-peasants/utils"
 	"net/http"
+	"time"
 
 	"github.com/jackc/pgx/v5"
 )
@@ -107,7 +108,28 @@ func (s *SessionService) DeleteSession(ctx context.Context, tx pgx.Tx, userId st
 func (s *SessionService) ValidateUserSession(ctx context.Context, userId string) (repo.SessionModel, error) {
 	session, err := s.sessionRepository.GetSessionByUserId(ctx, userId)
 	if err != nil {
-		return repo.SessionModel{}, errpkg.NewApiError(http.StatusUnauthorized, "Unauthorized")
+		return repo.SessionModel{}, errpkg.NewApiError(http.StatusUnauthorized, errpkg.Unauthorized)
+	}
+
+	tx, err := s.sessionRepository.BeginTx(ctx)
+
+	if err != nil {
+		return repo.SessionModel{}, err
+	}
+
+	defer func() {
+		err = s.sessionRepository.RollbackTx(ctx, tx)
+		if err != nil {
+			return
+		}
+	}()
+
+	if session.ExpiresAt < time.Now().Unix() {
+		err = s.sessionRepository.DeleteSession(ctx, tx, userId)
+		if err != nil {
+			return repo.SessionModel{}, err
+		}
+		return repo.SessionModel{}, errpkg.NewApiError(440, errpkg.SessionExpired)
 	}
 
 	accessToken, expiredAt, err := utils.CreateToken(userId, utils.Type.AccessToken)
@@ -120,13 +142,18 @@ func (s *SessionService) ValidateUserSession(ctx context.Context, userId string)
 		return repo.SessionModel{}, err
 	}
 
-	newSession, err := s.sessionRepository.UpdateSession(ctx, nil, repo.CreateSessionParams{
+	newSession, err := s.sessionRepository.UpdateSession(ctx, tx, repo.CreateSessionParams{
 		UserID:       session.UserID,
 		AccessToken:  accessToken,
 		RefreshToken: refreshToken,
 		ExpiresAt:    expiredAt,
 	})
 
+	if err != nil {
+		return repo.SessionModel{}, err
+	}
+
+	err = tx.Commit(ctx)
 	if err != nil {
 		return repo.SessionModel{}, err
 	}

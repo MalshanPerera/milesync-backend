@@ -6,7 +6,6 @@ import (
 	"jira-for-peasants/utils"
 	"net/http"
 	"strings"
-	"time"
 
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/labstack/echo/v4"
@@ -22,7 +21,7 @@ func IsAuthenticated(sessionService *services.SessionService) echo.MiddlewareFun
 			if headerStr == "" {
 				cookie, err := c.Cookie("token")
 				if err != nil {
-					return errpkg.NewApiError(http.StatusUnauthorized, "Unauthorized")
+					return errpkg.NewApiError(http.StatusUnauthorized, errpkg.Unauthorized)
 				}
 				headerStr = cookie.Value
 			}
@@ -49,11 +48,6 @@ func IsAuthenticated(sessionService *services.SessionService) echo.MiddlewareFun
 			_, err = sessionService.ValidateUserSession(c.Request().Context(), userId)
 			if err != nil {
 				return err
-			}
-
-			// Check if the token is expired
-			if float64(time.Now().Unix()) < claims["expired_at"].(float64) {
-				return errpkg.NewApiError(http.StatusUnauthorized, "Token expired")
 			}
 
 			// Add the user information to the context

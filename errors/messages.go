@@ -1,6 +1,7 @@
 package errpkg
 
 var (
+	Unauthorized               = "Unauthorized"
 	UserNotFound               = "UserNotFound"
 	InvalidPassword            = "InvalidPassword"
 	OrganizationNameExists     = "OrganizationNameExists"
@@ -10,4 +11,5 @@ var (
 	ProjectExists              = "ProjectExists"
 	ProjectKeyPrefixUsed       = "ProjectKeyPrefixUsed"
 	InvalidProjectType         = "InvalidProjectType"
+	SessionExpired             = "SessionExpired"
 )

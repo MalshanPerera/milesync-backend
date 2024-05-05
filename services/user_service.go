@@ -109,6 +109,9 @@ func (s *UserService) LoginUser(ctx context.Context, params LoginUserParams) (re
 	existingUser, err := s.userRepository.GetUserFromEmail(ctx, params.Email)
 
 	if err != nil {
+		if errors.Is(err, errpkg.NoResults) {
+			return repo.UserModel{}, repo.SessionModel{}, errpkg.NoResults
+		}
 		return repo.UserModel{}, repo.SessionModel{}, err
 	}
 
