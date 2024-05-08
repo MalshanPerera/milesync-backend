@@ -37,11 +37,15 @@ func ConfigureRoutes(
 	authGroup := apiV1.Group("/auth")
 	authHandler.RegisterRoutes(authGroup)
 
-	protectedRoutes := apiV1.Group("")
-	protectedRoutes.Use(middlewares.IsAuthenticated(sessionService))
+	authMiddleware := middlewares.IsAuthenticated(sessionService)
+	orgCheckMiddleware := middlewares.CheckOrganization(organizationService)
 
-	organizationGroup := protectedRoutes.Group("/organizations")
-	organizationHandler.RegisterRoutes(organizationGroup)
+	organizationGroup := apiV1.Group("/organizations")
+	organizationHandler.RegisterRoutes(organizationGroup, authMiddleware)
+
+	protectedRoutes := apiV1.Group("")
+	protectedRoutes.Use(authMiddleware)
+	protectedRoutes.Use(orgCheckMiddleware)
 
 	projectGroup := protectedRoutes.Group("/projects")
 	projectHandler.RegisterRoutes(projectGroup)

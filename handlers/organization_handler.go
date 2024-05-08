@@ -22,9 +22,9 @@ func NewOrganizationHandler(service *services.OrganizationService) OrganizationH
 	}
 }
 
-func (h *OrganizationHandler) RegisterRoutes(handler *echo.Group) {
-	handler.POST("", h.createOrganization)
-	handler.GET("/available", h.getHandleAvailable)
+func (h *OrganizationHandler) RegisterRoutes(handler *echo.Group, authMiddleware echo.MiddlewareFunc) {
+	handler.POST("", h.createOrganization, authMiddleware)
+	handler.GET("/available", h.getHandleAvailable, authMiddleware)
 }
 
 func (h *OrganizationHandler) createOrganization(c echo.Context) error {
@@ -54,9 +54,9 @@ func (h *OrganizationHandler) createOrganization(c echo.Context) error {
 	})
 
 	if err != nil {
-		var err errpkg.AppError
-		if errors.As(err, &err) {
-			return errpkg.BadRequest(err.Message)
+		var appErr errpkg.AppError
+		if errors.As(err, &appErr) {
+			return errpkg.BadRequest(appErr.Message)
 		}
 		return err
 	}

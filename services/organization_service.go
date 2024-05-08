@@ -65,3 +65,7 @@ func (s *OrganizationService) GetOrganizationSlugUsed(ctx context.Context, name 
 func (s *OrganizationService) GetOrganization(ctx context.Context, slug string) (repo.OrganizationModel, error) {
 	return s.organizationRepository.GetOrganization(ctx, slug)
 }
+
+func (s *OrganizationService) GetOrganizationForUser(ctx context.Context, userId string, organizationId string) (repo.OrganizationUserModel, error) {
+	return s.organizationRepository.GetOrganizationForUser(ctx, userId, organizationId)
+}

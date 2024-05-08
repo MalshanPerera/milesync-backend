@@ -26,7 +26,7 @@ func NewAppError(message string) AppError {
 	}
 }
 
-func ServiceError(message string) error {
+func ServiceError(message string) AppError {
 	return NewAppError(message)
 }
 

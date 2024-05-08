@@ -39,3 +39,7 @@ RETURNING *;
 -- name: GetOrganizationByUserId :one
 SELECT * FROM organization
 WHERE user_id = $1 LIMIT 1;
+
+-- name: GetOrganizationForUser :one
+SELECT * FROM organization_users
+WHERE user_id = $1 AND organization_id = $2 LIMIT 1;

@@ -7,6 +7,7 @@ import (
 )
 
 type OrganizationModel db.Organization
+type OrganizationUserModel db.OrganizationUser
 
 type OrganizationRepository struct {
 	*datastore.Trx
@@ -67,4 +68,16 @@ func (repo *OrganizationRepository) GetOrganizationByUserId(ctx context.Context,
 	}
 
 	return OrganizationModel(res), nil
+}
+
+func (repo *OrganizationRepository) GetOrganizationForUser(ctx context.Context, userId string, organizationId string) (OrganizationUserModel, error) {
+	res, err := repo.db.GetQuery().GetOrganizationForUser(ctx, db.GetOrganizationForUserParams{
+		UserID:         userId,
+		OrganizationID: organizationId,
+	})
+	if err != nil {
+		return OrganizationUserModel{}, err
+	}
+
+	return OrganizationUserModel(res), nil
 }

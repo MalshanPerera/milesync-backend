@@ -86,6 +86,29 @@ func (q *Queries) GetOrganizationByUserId(ctx context.Context, userID string) (O
 	return i, err
 }
 
+const getOrganizationForUser = `-- name: GetOrganizationForUser :one
+SELECT id, organization_id, user_id, created_at, updated_at FROM organization_users
+WHERE user_id = $1 AND organization_id = $2 LIMIT 1
+`
+
+type GetOrganizationForUserParams struct {
+	UserID         string
+	OrganizationID string
+}
+
+func (q *Queries) GetOrganizationForUser(ctx context.Context, arg GetOrganizationForUserParams) (OrganizationUser, error) {
+	row := q.db.QueryRow(ctx, getOrganizationForUser, arg.UserID, arg.OrganizationID)
+	var i OrganizationUser
+	err := row.Scan(
+		&i.ID,
+		&i.OrganizationID,
+		&i.UserID,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
 const getOrganizationSlugUsed = `-- name: GetOrganizationSlugUsed :one
 SELECT EXISTS (
     SELECT 1
