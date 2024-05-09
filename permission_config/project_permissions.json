@@ -1,0 +1,42 @@
+[
+  {
+    "key": "jiraForPeasants.project-create",
+    "value": "Create Project",
+    "description": "Create Project",
+    "depends_on": [
+      "jiraForPeasants.project-edit",
+      "jiraForPeasants.project-view",
+      "jiraForPeasants.project-browse"
+    ]
+  },
+  {
+    "key": "jiraForPeasants.project-edit",
+    "value": "Edit Project",
+    "description": "Edit Project",
+    "depends_on": [
+      "jiraForPeasants.project-view",
+      "jiraForPeasants.project-browse"
+    ]
+  },
+  {
+    "key": "jiraForPeasants.project-delete",
+    "value": "Delete Project",
+    "description": "Delete Project",
+    "depends_on": [
+      "jiraForPeasants.project-view",
+      "jiraForPeasants.project-browse"
+    ]
+  },
+  {
+    "key": "jiraForPeasants.project-view",
+    "value": "View Project",
+    "description": "View Project",
+    "depends_on": ["jiraForPeasants.project-browse"]
+  },
+  {
+    "key": "jiraForPeasants.project-browse",
+    "value": "Browse Projects",
+    "description": "Browse Projects",
+    "depends_on": []
+  }
+]

@@ -1,0 +1,92 @@
+[
+  {
+    "key": "jiraForPeasants.task-create",
+    "name": "Create a task",
+    "description": "Create a task",
+    "depends_on": ["jiraForPeasants.task-view", "jiraForPeasants.task-edit"]
+  },
+  {
+    "key": "jiraForPeasants.task-edit",
+    "name": "Edit a task",
+    "description": "Edit a task",
+    "depends_on": ["jiraForPeasants.task-view"]
+  },
+  {
+    "key": "jiraForPeasants.task-delete",
+    "name": "Delete a task",
+    "description": "Delete a task",
+    "depends_on": ["jiraForPeasants.task-view"]
+  },
+  {
+    "key": "jiraForPeasants.task-view",
+    "name": "View a task",
+    "description": "View a task",
+    "depends_on": []
+  },
+  {
+    "key": "jiraForPeasants.task-assign",
+    "name": "Assign a task",
+    "description": "Assign a task",
+    "depends_on": ["jiraForPeasants.task-view"]
+  },
+  {
+    "key": "jiraForPeasants.task-comment",
+    "name": "Comment on a task",
+    "description": "Comment on a task",
+    "depends_on": ["jiraForPeasants.task-view"]
+  },
+  {
+    "key": "jiraForPeasants.task-attach",
+    "name": "Attach a file to a task",
+    "description": "Attach a file to a task",
+    "depends_on": ["jiraForPeasants.task-view"]
+  },
+  {
+    "key": "jiraForPeasants.task-watch",
+    "name": "Watch a task",
+    "description": "Watch a task",
+    "depends_on": ["jiraForPeasants.task-view"]
+  },
+  {
+    "key": "jiraForPeasants.task-update-status",
+    "name": "Update a task status",
+    "description": "Update a task status",
+    "depends_on": ["jiraForPeasants.task-view"]
+  },
+  {
+    "key": "jiraForPeasants.task-link",
+    "name": "Link a task",
+    "description": "Link a task",
+    "depends_on": ["jiraForPeasants.task-view"]
+  },
+  {
+    "key": "jiraForPeasants.task-clone",
+    "name": "Clone a task",
+    "description": "Clone a task",
+    "depends_on": ["jiraForPeasants.task-view"]
+  },
+  {
+    "key": "jiraForPeasants.task-priority",
+    "name": "Set a task's priority",
+    "description": "Set a task's priority",
+    "depends_on": ["jiraForPeasants.task-view"]
+  },
+  {
+    "key": "jiraForPeasants.task-label",
+    "name": "Set a task's label",
+    "description": "Set a task's label",
+    "depends_on": ["jiraForPeasants.task-view"]
+  },
+  {
+    "key": "jiraForPeasants.task-assignee",
+    "name": "Set a task's assignee",
+    "description": "Set a task's assignee",
+    "depends_on": ["jiraForPeasants.task-view"]
+  },
+  {
+    "key": "jiraForPeasants.task-reporter",
+    "name": "Set a task's reporter",
+    "description": "Set a task's reporter",
+    "depends_on": ["jiraForPeasants.task-view"]
+  }
+]
