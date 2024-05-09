@@ -25,6 +25,10 @@ tidy:
 test:
 	ENV=CI	go test -v ./... -count=1
 
+.PHONY: test-single
+test-single:
+	ENV=CI go test ./... -run $(TEST) -v
+
 sqlc:
 	@echo "Generating SQLC..."
 	sqlc generate
