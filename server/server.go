@@ -11,6 +11,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"syscall"
 	"time"
 
 	"github.com/go-playground/validator/v10"
@@ -30,8 +31,16 @@ type CustomValidator struct {
 
 func (cv *CustomValidator) Validate(i interface{}) error {
 	if err := cv.validator.Struct(i); err != nil {
-		// Optionally, you could return the error to give each route more control over the status code
-		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+		if validatorErr, ok := err.(validator.ValidationErrors); ok {
+			// return error from first failure, may want to return list with all errors
+			errorMap := make(map[string][]string)
+			for _, err := range validatorErr {
+				fieldName := err.Field()
+				errorMap[fieldName] = append(errorMap[fieldName], err.Tag())
+			}
+			return errpkg.UnprocessableEntity(errorMap)
+		}
+		return err
 	}
 	return nil
 }
@@ -65,10 +74,7 @@ func (s *Server) SetupErrorHandler() {
 
 		// check if error is known type to be handled differently
 		if myErr, ok := err.(errpkg.ApiError); ok {
-			if err := c.JSON(myErr.Code, map[string]string{
-				"code":    fmt.Sprintf("%d", myErr.Code),
-				"message": myErr.Message,
-			}); err != nil {
+			if err := c.JSON(myErr.Code, myErr); err != nil {
 				s.Echo.Logger.Error(err)
 			}
 			return
@@ -85,12 +91,12 @@ func (s *Server) SetupCors() {
 }
 
 func (s *Server) Start() {
-	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt)
+	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
 	// Start server
 	go func() {
 		if err := s.Echo.Start(":" + s.Config.Port); err != nil && !errors.Is(err, http.ErrServerClosed) {
-			s.Echo.Logger.Fatal("shutting down the server", err)
+			s.Echo.Logger.Error("error starting server:", err) // Consider using Error level here
 		}
 	}()
 
@@ -106,9 +112,9 @@ func (s *Server) Start() {
 	select {
 	case err := <-shutdownError:
 		if err != nil {
-			s.Echo.Logger.Fatal(err)
+			s.Echo.Logger.Fatal("error during shutdown:", err)
 		}
 	case <-ctxShutdown.Done():
-		s.Echo.Logger.Fatal("shutdown timeout")
+		s.Echo.Logger.Fatal("server shutdown timed out")
 	}
 }

@@ -5,8 +5,9 @@ import (
 )
 
 type ApiError struct {
-	Code    int    `json:"code"`
-	Message string `json:"message"`
+	Code    int                 `json:"code"`
+	Message string              `json:"message,omitempty"`
+	Errors  map[string][]string `json:"errors,omitempty"`
 }
 
 func (e ApiError) Error() string {
@@ -27,9 +28,9 @@ func BadRequest(message string) ApiError {
 	}
 }
 
-func UnprocessableEntity(message string) ApiError {
+func UnprocessableEntity(errors map[string][]string) ApiError {
 	return ApiError{
-		Code:    http.StatusUnprocessableEntity,
-		Message: message,
+		Code:   http.StatusUnprocessableEntity,
+		Errors: errors,
 	}
 }

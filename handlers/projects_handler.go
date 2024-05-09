@@ -38,7 +38,7 @@ func (h *ProjectHandler) handleCreateProject(c echo.Context) error {
 		return errpkg.BadRequest(err.Error())
 	}
 	if err := c.Validate(u); err != nil {
-		return errpkg.UnprocessableEntity(err.Error())
+		return err
 	}
 
 	status, e := h.projectService.GetProjectKeyPrefixUsed(ctx, u.KeyPrefix)
