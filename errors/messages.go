@@ -12,4 +12,5 @@ var (
 	ProjectKeyPrefixUsed       = "ProjectKeyPrefixUsed"
 	InvalidProjectType         = "InvalidProjectType"
 	SessionExpired             = "SessionExpired"
+	KeyPrefixTooLong           = "KeyPrefixTooLong"
 )

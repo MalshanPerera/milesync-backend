@@ -36,12 +36,10 @@ func CreatePostgresContainer(ctx context.Context, db_scripts []string) (*Postgre
 		return nil, err
 	}
 
-	for _, script := range copiedScripts {
-		scripts = append(scripts, script)
-	}
+	scripts = append(scripts, copiedScripts...)
 
 	pgContainer, err := postgres.RunContainer(ctx,
-		testcontainers.WithImage("postgres:15.3-alpine"),
+		testcontainers.WithImage("postgres:16"),
 		postgres.WithInitScripts(scripts...),
 		postgres.WithDatabase("test-db"),
 		postgres.WithUsername("postgres"),

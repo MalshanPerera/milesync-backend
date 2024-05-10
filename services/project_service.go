@@ -37,6 +37,10 @@ func (s *ProjectService) CreateProject(ctx context.Context, params CreateProject
 		return repo.ProjectModel{}, errors.New(errpkg.ProjectExists)
 	}
 
+	if len(params.KeyPrefix) > 4 {
+		return repo.ProjectModel{}, errors.New(errpkg.KeyPrefixTooLong)
+	}
+
 	project, err := s.projectRepository.CreateProject(ctx, repo.CreateProjectParams{
 		UserId:         params.UserId,
 		OrganizationId: params.OrganizationId,

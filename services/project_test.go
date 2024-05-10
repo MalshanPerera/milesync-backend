@@ -3,6 +3,7 @@ package services_test
 import (
 	"context"
 	datastore "jira-for-peasants/db"
+	errpkg "jira-for-peasants/errors"
 	"jira-for-peasants/repositories"
 	"jira-for-peasants/services"
 	testUtils "jira-for-peasants/test_utils"
@@ -24,6 +25,7 @@ func (suite *ProjectServiceTestSuite) SetupSuite() {
 	scripts := []string{
 		"test-users.sql",
 		"test-organizations.sql",
+		"test-projects.sql",
 	}
 
 	pgContainer, err := testUtils.CreatePostgresContainer(suite.ctx, scripts)
@@ -60,6 +62,54 @@ func (suite *ProjectServiceTestSuite) TestCreateProjectWithInvalidUser() {
 	})
 
 	suite.NotNil(err)
+}
+
+func (suite *ProjectServiceTestSuite) TestCreateProjectWithInvalidOrganization() {
+	_, err := suite.projectService.CreateProject(suite.ctx, services.CreateProjectParams{
+		Name:           "Invalid Organization",
+		UserId:         "123123",
+		OrganizationId: "INoExist",
+		KeyPrefix:      "IO",
+		Type:           "global",
+	})
+
+	suite.NotNil(err)
+}
+
+func (suite *ProjectServiceTestSuite) TestCreateProjectWithInvalidType() {
+	_, err := suite.projectService.CreateProject(suite.ctx, services.CreateProjectParams{
+		Name:           "Invalid Type",
+		UserId:         "123123",
+		OrganizationId: "151515",
+		KeyPrefix:      "IT",
+		Type:           "invalid",
+	})
+
+	suite.NotNil(err)
+}
+
+func (suite *ProjectServiceTestSuite) TestCreateProjectWithMoreThan4KeyPrefix() {
+	_, err := suite.projectService.CreateProject(suite.ctx, services.CreateProjectParams{
+		Name:           "Invalid Key Prefix",
+		UserId:         "123123",
+		OrganizationId: "151515",
+		KeyPrefix:      "InvalidKeyPrefix",
+		Type:           "global",
+	})
+
+	suite.EqualError(err, errpkg.KeyPrefixTooLong)
+}
+
+func (suite *ProjectServiceTestSuite) TestCreateProjectWithExistingKeyPrefix() {
+	_, err := suite.projectService.CreateProject(suite.ctx, services.CreateProjectParams{
+		Name:           "Die Hard",
+		UserId:         "123123",
+		OrganizationId: "151515",
+		KeyPrefix:      "P1",
+		Type:           "global",
+	})
+
+	suite.EqualError(err, errpkg.ProjectExists)
 }
 
 func (suite *ProjectServiceTestSuite) TearDownSuite() {
