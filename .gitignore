@@ -13,6 +13,7 @@ tmp/
 
 # Temporary files
 temp_migrations
+temp_test_scripts
 
 # JetBrains IDE
 .idea/

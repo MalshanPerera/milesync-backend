@@ -22,6 +22,7 @@ type ProjectServiceTestSuite struct {
 func (suite *ProjectServiceTestSuite) SetupSuite() {
 	suite.ctx = context.Background()
 	scripts := []string{
+		"test-users.sql",
 		"test-organizations.sql",
 	}
 

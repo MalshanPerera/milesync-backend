@@ -2,6 +2,7 @@ package test_utils
 
 import (
 	"context"
+	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
@@ -20,6 +21,7 @@ type PostgresContainer struct {
 func CreatePostgresContainer(ctx context.Context, db_scripts []string) (*PostgresContainer, error) {
 	scripts := make([]string, 0, len(db_scripts))
 	defer RemoveTempMigrations()
+	defer RemoveTempTestScripts()
 	migrations, err := GetMigrationScripts()
 	if err != nil {
 		return nil, err
@@ -29,8 +31,13 @@ func CreatePostgresContainer(ctx context.Context, db_scripts []string) (*Postgre
 		scripts = append(scripts, filepath.Join("..", "migrations", migration))
 	}
 
-	for _, script := range db_scripts {
-		scripts = append(scripts, filepath.Join("..", "testdata", script))
+	copiedScripts, err := CopyTestScripts(len(scripts), db_scripts)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, script := range copiedScripts {
+		scripts = append(scripts, script)
 	}
 
 	pgContainer, err := postgres.RunContainer(ctx,
@@ -69,7 +76,7 @@ func GetMigrationScripts() ([]string, error) {
 
 	paths := make([]string, 0, len(files))
 	os.Mkdir(filepath.Join("..", "temp_migrations"), 0755)
-	for _, file := range files {
+	for i, file := range files {
 		if !file.IsDir() {
 			content, err := os.ReadFile(filepath.Join("..", "migrations", file.Name()))
 			if err != nil {
@@ -82,13 +89,42 @@ func GetMigrationScripts() ([]string, error) {
 			}
 
 			extracted := content[start:end]
-			err = os.WriteFile(filepath.Join("..", "temp_migrations", file.Name()), extracted, 0644)
+			fileName := fmt.Sprintf("%02d_%s", i, file.Name())
+			err = os.WriteFile(filepath.Join("..", "temp_migrations", fileName), extracted, 0644)
 			if err != nil {
 				return nil, err
 			}
 
-			paths = append(paths, filepath.Join("..", "temp_migrations", file.Name()))
+			paths = append(paths, filepath.Join("..", "temp_migrations", fileName))
 		}
+	}
+
+	return paths, nil
+}
+
+func RemoveTempTestScripts() error {
+	err := os.RemoveAll(filepath.Join("..", "temp_test_scripts"))
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func CopyTestScripts(startIndex int, scripts []string) ([]string, error) {
+	paths := make([]string, 0, len(scripts))
+	os.Mkdir(filepath.Join("..", "temp_test_scripts"), 0755)
+	for i, file := range scripts {
+		content, err := os.ReadFile(filepath.Join("..", "testdata", file))
+		if err != nil {
+			return nil, err
+		}
+		fileName := fmt.Sprintf("%02d_%s", startIndex+i, file)
+		err = os.WriteFile(filepath.Join("..", "temp_test_scripts", fileName), content, 0644)
+		if err != nil {
+			return nil, err
+		}
+		paths = append(paths, filepath.Join("..", "temp_test_scripts", fileName))
 	}
 
 	return paths, nil
