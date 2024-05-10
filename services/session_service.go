@@ -5,7 +5,6 @@ import (
 	errpkg "jira-for-peasants/errors"
 	repo "jira-for-peasants/repositories"
 	"jira-for-peasants/utils"
-	"net/http"
 	"time"
 
 	"github.com/jackc/pgx/v5"
@@ -108,7 +107,7 @@ func (s *SessionService) DeleteSession(ctx context.Context, tx pgx.Tx, userId st
 func (s *SessionService) ValidateUserSession(ctx context.Context, userId string) (repo.SessionModel, error) {
 	session, err := s.sessionRepository.GetSessionByUserId(ctx, userId)
 	if err != nil {
-		return repo.SessionModel{}, errpkg.NewApiError(http.StatusUnauthorized, errpkg.Unauthorized)
+		return repo.SessionModel{}, errpkg.NewAppError(errpkg.Unauthorized)
 	}
 
 	tx, err := s.sessionRepository.BeginTx(ctx)
@@ -129,7 +128,7 @@ func (s *SessionService) ValidateUserSession(ctx context.Context, userId string)
 		if err != nil {
 			return repo.SessionModel{}, err
 		}
-		return repo.SessionModel{}, errpkg.NewApiError(440, errpkg.SessionExpired)
+		return repo.SessionModel{}, errpkg.NewAppError(errpkg.SessionExpired)
 	}
 
 	accessToken, expiredAt, err := utils.CreateToken(userId, utils.Type.AccessToken)

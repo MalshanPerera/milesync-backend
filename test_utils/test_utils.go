@@ -32,6 +32,7 @@ func CreatePostgresContainer(ctx context.Context, db_scripts []string) (*Postgre
 	for _, script := range db_scripts {
 		scripts = append(scripts, filepath.Join("..", "testdata", script))
 	}
+
 	pgContainer, err := postgres.RunContainer(ctx,
 		testcontainers.WithImage("postgres:15.3-alpine"),
 		postgres.WithInitScripts(scripts...),

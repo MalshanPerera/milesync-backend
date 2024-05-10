@@ -4,3 +4,12 @@ VALUES
     ('456456', 'Jane', 'Doe', 'jane@doe.com', '45645'),
     ('789789', 'Alice', 'Smith', 'alice@smith.com', '78978')
 RETURNING *;
+
+INSERT INTO organization (id, user_id, name, slug)
+VALUES (
+    '151515',
+    '123123',
+    'John',
+    'john'
+)
+RETURNING *;

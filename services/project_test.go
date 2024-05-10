@@ -22,13 +22,14 @@ type ProjectServiceTestSuite struct {
 func (suite *ProjectServiceTestSuite) SetupSuite() {
 	suite.ctx = context.Background()
 	scripts := []string{
-		"test-users.sql",
+		"test-organizations.sql",
 	}
 
 	pgContainer, err := testUtils.CreatePostgresContainer(suite.ctx, scripts)
 	if err != nil {
 		log.Fatal(err)
 	}
+
 	suite.pgContainer = pgContainer
 	db := datastore.NewDBFromConnectionString(pgContainer.ConnectionString)
 
@@ -40,7 +41,7 @@ func (suite *ProjectServiceTestSuite) TestCreateProject() {
 	_, err := suite.projectService.CreateProject(suite.ctx, services.CreateProjectParams{
 		Name:           "Die Hard",
 		UserId:         "123123",
-		OrganizationId: "123123",
+		OrganizationId: "151515",
 		KeyPrefix:      "DH",
 		Type:           "global",
 	})
@@ -52,7 +53,7 @@ func (suite *ProjectServiceTestSuite) TestCreateProjectWithInvalidUser() {
 	_, err := suite.projectService.CreateProject(suite.ctx, services.CreateProjectParams{
 		Name:           "Invalid User",
 		UserId:         "INoExist",
-		OrganizationId: "123123",
+		OrganizationId: "151515",
 		KeyPrefix:      "IU",
 		Type:           "global",
 	})

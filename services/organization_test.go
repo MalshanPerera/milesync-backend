@@ -16,7 +16,6 @@ type OrganizationServiceTestSuite struct {
 	suite.Suite
 	pgContainer         *testUtils.PostgresContainer
 	organizationService *services.OrganizationService
-	userService         *services.UserService
 	ctx                 context.Context
 }
 
@@ -30,22 +29,17 @@ func (suite *OrganizationServiceTestSuite) SetupSuite() {
 	if err != nil {
 		log.Fatal(err)
 	}
+
 	suite.pgContainer = pgContainer
 	db := datastore.NewDBFromConnectionString(pgContainer.ConnectionString)
 
 	organizationRepository := repositories.NewOrganizationRepository(db)
-	userRepository := repositories.NewUserRepository(db)
-	sessionRepository := repositories.NewSessionRepository(db)
 	suite.organizationService = services.NewOrganizationService(organizationRepository)
-	suite.userService = services.NewUserService(
-		userRepository,
-		sessionRepository,
-	)
 }
 
 func (suite *OrganizationServiceTestSuite) TestCreateOrganization() {
 	_, err := suite.organizationService.CreateOrganization(suite.ctx, services.CreateOrganizationParams{
-		Name:   "Die Hard",
+		Name:   "Test Organization",
 		UserId: "123123",
 	})
 
