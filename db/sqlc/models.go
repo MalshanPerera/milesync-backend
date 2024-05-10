@@ -17,6 +17,14 @@ type Organization struct {
 	UpdatedAt pgtype.Timestamp
 }
 
+type OrganizationUser struct {
+	ID             string
+	OrganizationID string
+	UserID         string
+	CreatedAt      pgtype.Timestamp
+	UpdatedAt      pgtype.Timestamp
+}
+
 type Project struct {
 	ID             string
 	UserID         string
@@ -39,7 +47,7 @@ type ProjectsUser struct {
 type Role struct {
 	ID             string
 	OrganizationID string
-	DefaultID      pgtype.Text
+	DefaultID      *string
 	Name           string
 	Description    string
 	Permissions    []string
