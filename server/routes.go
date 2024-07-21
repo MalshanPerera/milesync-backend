@@ -17,6 +17,7 @@ func ConfigureRoutes(
 	sessionRepository := repositories.NewSessionRepository(s.DB)
 	organizationRepository := repositories.NewOrganizationRepository(s.DB)
 	projectsRepository := repositories.NewProjectRepository(s.DB)
+	roleRepository := repositories.NewRoleRepository(s.DB)
 
 	// Registering services
 	userService := services.NewUserService(
@@ -27,11 +28,13 @@ func ConfigureRoutes(
 	sessionService := services.NewSessionService(sessionRepository)
 	projectService := services.NewProjectService(projectsRepository)
 	organizationService := services.NewOrganizationService(organizationRepository)
+	roleService := services.NewRoleService(roleRepository)
 
 	// Registering handlers
 	authHandler := handlers.NewAuthHandler(userService)
 	organizationHandler := handlers.NewOrganizationHandler(organizationService)
 	projectHandler := handlers.NewProjectHandler(projectService)
+	rolesHandler := handlers.NewRoleHandler(roleService)
 
 	// Registering routes
 	authGroup := apiV1.Group("/auth")
@@ -49,6 +52,9 @@ func ConfigureRoutes(
 
 	projectGroup := protectedRoutes.Group("/projects")
 	projectHandler.RegisterRoutes(projectGroup)
+
+	rolesGroup := protectedRoutes.Group("/roles")
+	rolesHandler.RegisterRoutes(rolesGroup)
 
 	routeList := s.Echo.Routes()
 	for _, route := range routeList {
