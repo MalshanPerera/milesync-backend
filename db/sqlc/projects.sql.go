@@ -128,12 +128,17 @@ func (q *Queries) GetProjectKeyPrefixUsed(ctx context.Context, keyPrefix string)
 
 const getProjects = `-- name: GetProjects :many
 SELECT id, user_id, organization_id, name, key_prefix, type, created_at, updated_at FROM projects
-WHERE user_id = $1
+WHERE user_id = $1 AND organization_id = $2
 ORDER BY created_at DESC
 `
 
-func (q *Queries) GetProjects(ctx context.Context, userID string) ([]Project, error) {
-	rows, err := q.db.Query(ctx, getProjects, userID)
+type GetProjectsParams struct {
+	UserID         string
+	OrganizationID string
+}
+
+func (q *Queries) GetProjects(ctx context.Context, arg GetProjectsParams) ([]Project, error) {
+	rows, err := q.db.Query(ctx, getProjects, arg.UserID, arg.OrganizationID)
 	if err != nil {
 		return nil, err
 	}

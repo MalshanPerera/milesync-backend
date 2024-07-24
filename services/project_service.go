@@ -20,6 +20,13 @@ type CreateProjectParams struct {
 	Type           string
 }
 
+type UpdateProjectParams struct {
+	ID        string
+	UserId    string
+	Name      string
+	KeyPrefix string
+}
+
 func NewProjectService(projectRepo *repo.ProjectRepository) *ProjectService {
 	return &ProjectService{
 		projectRepository: projectRepo,
@@ -42,7 +49,7 @@ func (s *ProjectService) CreateProject(ctx context.Context, params CreateProject
 	}
 
 	project, err := s.projectRepository.CreateProject(ctx, repo.CreateProjectParams{
-		UserId:         params.UserId,
+		UserID:         params.UserId,
 		OrganizationId: params.OrganizationId,
 		Name:           params.Name,
 		KeyPrefix:      createKeyPrefix(params.KeyPrefix),
@@ -54,6 +61,41 @@ func (s *ProjectService) CreateProject(ctx context.Context, params CreateProject
 	}
 
 	return project, nil
+}
+
+func (s *ProjectService) UpdateProject(ctx context.Context, params UpdateProjectParams) (repo.ProjectModel, error) {
+	_, err := s.projectRepository.GetProjectById(ctx, params.ID, params.UserId)
+
+	if err != nil {
+		return repo.ProjectModel{}, err
+	}
+
+	project, err := s.projectRepository.UpdateProject(ctx, repo.UpdateProjectParams{
+		ID:        params.ID,
+		UserID:    params.UserId,
+		Name:      params.Name,
+		KeyPrefix: createKeyPrefix(params.KeyPrefix),
+	})
+
+	if err != nil {
+		return repo.ProjectModel{}, err
+	}
+
+	return project, nil
+}
+
+func (s *ProjectService) DeleteProject(ctx context.Context, id string, userId string) error {
+	_, err := s.projectRepository.GetProjectById(ctx, id, userId)
+
+	if err != nil {
+		return err
+	}
+
+	return s.projectRepository.DeleteProject(ctx, id, userId)
+}
+
+func (s *ProjectService) GetProjects(ctx context.Context, userId string, organizationId string) ([]repo.ProjectModel, error) {
+	return s.projectRepository.GetProjects(ctx, userId, organizationId)
 }
 
 func (s *ProjectService) GetProjectByKeyPrefix(ctx context.Context, keyPrefix string) (repo.ProjectModel, error) {

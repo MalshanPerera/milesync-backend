@@ -32,7 +32,7 @@ SELECT EXISTS (
 
 -- name: GetProjects :many
 SELECT * FROM projects
-WHERE user_id = $1
+WHERE user_id = $1 AND organization_id = $2
 ORDER BY created_at DESC;
 
 -- name: GetProjectByKeyPrefix :one
