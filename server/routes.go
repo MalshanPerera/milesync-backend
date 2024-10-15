@@ -18,6 +18,9 @@ func ConfigureRoutes(
 	organizationRepository := repositories.NewOrganizationRepository(s.DB)
 	projectsRepository := repositories.NewProjectRepository(s.DB)
 	roleRepository := repositories.NewRoleRepository(s.DB)
+	statusRepository := repositories.NewStatusRepository(s.DB)
+	labelRepository := repositories.NewLabelRepository(s.DB)
+	taskRepository := repositories.NewTaskRepository(s.DB)
 
 	// Registering services
 	userService := services.NewUserService(
@@ -29,12 +32,18 @@ func ConfigureRoutes(
 	projectService := services.NewProjectService(projectsRepository)
 	organizationService := services.NewOrganizationService(organizationRepository)
 	roleService := services.NewRoleService(roleRepository)
+	statusService := services.NewStatusService(statusRepository)
+	labelService := services.NewLabelService(labelRepository)
+	taskService := services.NewTaskService(taskRepository)
 
 	// Registering handlers
 	authHandler := handlers.NewAuthHandler(userService)
 	organizationHandler := handlers.NewOrganizationHandler(organizationService)
 	projectHandler := handlers.NewProjectHandler(projectService)
 	rolesHandler := handlers.NewRoleHandler(roleService)
+	statusHandler := handlers.NewStatusHandler(statusService)
+	labelHandler := handlers.NewLabelHandler(labelService)
+	taskHandler := handlers.NewTaskHandler(taskService)
 
 	// Registering routes
 	authGroup := apiV1.Group("/auth")
@@ -55,6 +64,15 @@ func ConfigureRoutes(
 
 	rolesGroup := protectedRoutes.Group("/roles")
 	rolesHandler.RegisterRoutes(rolesGroup)
+
+	statusGroup := protectedRoutes.Group("/statuses")
+	statusHandler.RegisterRoutes(statusGroup)
+
+	labelGroup := protectedRoutes.Group("/labels")
+	labelHandler.RegisterRoutes(labelGroup)
+
+	taskGroup := protectedRoutes.Group("/tasks")
+	taskHandler.RegisterRoutes(taskGroup)
 
 	routeList := s.Echo.Routes()
 	for _, route := range routeList {

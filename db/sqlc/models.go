@@ -8,6 +8,28 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+type CommentAttachment struct {
+	ID        string
+	CommentID string
+	UserID    string
+	FileName  string
+	FilePath  string
+	FileSize  int64
+	MimeType  string
+	CreatedAt pgtype.Timestamp
+	UpdatedAt pgtype.Timestamp
+}
+
+type Label struct {
+	ID             string
+	Name           string
+	Color          string
+	ProjectID      string
+	OrganizationID string
+	CreatedAt      pgtype.Timestamp
+	UpdatedAt      pgtype.Timestamp
+}
+
 type Organization struct {
 	ID        string
 	UserID    string
@@ -72,6 +94,72 @@ type Session struct {
 	ExpiresAt    int64
 	CreatedAt    pgtype.Timestamp
 	UpdatedAt    pgtype.Timestamp
+}
+
+type Status struct {
+	ID             string
+	Name           string
+	Color          string
+	ProjectID      string
+	OrganizationID string
+	CreatedAt      pgtype.Timestamp
+	UpdatedAt      pgtype.Timestamp
+}
+
+type Task struct {
+	ID             string
+	Title          string
+	Description    *string
+	UserID         string
+	AssignerID     *string
+	ReporterID     *string
+	OrganizationID string
+	ProjectID      string
+	StatusID       string
+	Priority       int16
+	DueDate        pgtype.Timestamp
+	OrderIndex     *int32
+	CreatedAt      pgtype.Timestamp
+	UpdatedAt      pgtype.Timestamp
+	DeletedAt      pgtype.Timestamp
+}
+
+type TaskAssignee struct {
+	ID        string
+	TaskID    string
+	UserID    string
+	CreatedAt pgtype.Timestamp
+	UpdatedAt pgtype.Timestamp
+}
+
+type TaskAttachment struct {
+	ID        string
+	TaskID    string
+	UserID    string
+	FileName  string
+	FilePath  string
+	FileSize  int64
+	MimeType  string
+	CreatedAt pgtype.Timestamp
+	UpdatedAt pgtype.Timestamp
+}
+
+type TaskComment struct {
+	ID              string
+	TaskID          string
+	UserID          string
+	ParentCommentID *string
+	Comment         string
+	CreatedAt       pgtype.Timestamp
+	UpdatedAt       pgtype.Timestamp
+}
+
+type TaskLabel struct {
+	ID        string
+	TaskID    string
+	LabelID   string
+	CreatedAt pgtype.Timestamp
+	UpdatedAt pgtype.Timestamp
 }
 
 type User struct {
