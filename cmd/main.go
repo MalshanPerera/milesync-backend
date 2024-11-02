@@ -1,8 +1,8 @@
 package main
 
 import (
-	"jira-for-peasants/middlewares"
-	"jira-for-peasants/server"
+	"jira-for-peasants/internal/middlewares"
+	"jira-for-peasants/internal/server"
 )
 
 func main() {
