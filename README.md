@@ -1,5 +1,20 @@
 # Jira For Peasants 😤
 
+## Folder Structure
+
+The project follows a standard Go project layout:
+
+- `/cmd` - Main applications for this project
+  - `/main.go` - Entry point of the application
+- `/internal` - Private application and library code
+  - `/api` - API request/response models and validation
+  - `/handlers` - HTTP handlers for each route
+  - `/repositories` - Database access layer
+  - `/services` - Business logic layer
+- `/migrations` - Database migration files
+- `/pkg` - Library code that can be used by external applications
+- `/bin` - Compiled application binaries
+
 ## Prerequisites
 
 Install Air -> `go install https://github.com/cosmtrek/air`
